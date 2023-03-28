@@ -27,7 +27,9 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/app/analyzer/calculador.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -94,5 +96,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "5ef412af-9f84-42eb-963a-2a40525d5424"
   }
 }
