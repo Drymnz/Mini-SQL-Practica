@@ -1,0 +1,48 @@
+DECLARE @name AS TEXT = "hello";
+DECLARE @email AS TEXT;
+DECLARE @id AS INT;
+DECLARE @dec, @dec1 AS DECIMAL;
+DECLARE @flag AS BOOLEAN;
+# definición de la table person
+person(id INT,first_name STRING, gender STRING,age INT);
+id=1,first_name="Ivan",gender="Male",age=39;
+id=2,first_name="Roderich",gender="Polygender",age=32;
+id=3,first_name="Haley",gender="Male",age=33;
+id=4,first_name="Sheelagh",gender="Female",age=35;
+id=5,first_name="Hy",gender="Male",age=35;
+id=6,first_name="Hillery",gender="Male",age=38;
+id=7,first_name="Ema",gender="Female",age=22;
+id=8,first_name="Saundra",gender="Male",age=23;
+id=9,first_name="Tiler",gender="Male",age=20;
+id=10,first_name="Deane",gender="Male",age=30;
+# definición de la table actor
+actor(name STRING, active BOOLEAN, location STRING);
+name="Thom", active=false && true, location="Baraçais";
+name="Carmel", active=true, location="Huaqiao";
+name="Darwin", active=true, location="København";
+name="Clarance", active=true, location="Dobrzeń Wielki";
+name="Archibold", active=false, location="Khotsimsk";
+name="Dione", active=true, location="Urpay";
+name="Perceval", active=true, location="Wohyń";
+name="Linn", active=false, location="Zarumilla";
+name="Darb", active=true, location="Novaya Lyalya";
+name="Lazar", active=true, location="Slobozia";
+# fin
+PRINT ('Looking for id', 7, 'or', 10, '.');
+PRINT('The value of name is', @name);
+DECLARE @name AS TEXT = "hello";
+DECLARE @email AS TEXT;
+DECLARE @id AS INT;
+DECLARE @dec, @dec1 AS DECIMAL;
+DECLARE @flag AS BOOLEAN;
+
+IF @id == 7 OR @id == 10 THEN
+SET @name = INPUT("Ingrese el nombre a buscar: ");
+SET @dec = INPUT("Ingrese la edad a buscar: ");
+PRINT ('Looking for id', 7, 'or', 10, '.');
+ELSEIF @id == 12 * 2 THEN
+SET @dec1 = 12.5 * 2;
+ELSE
+SET @dec1 = 1;
+SET @id = 1;
+END IF;

@@ -10,7 +10,7 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 \n+   					            {}
 \r+   					            {}
 \v+   					            {}
-(\"[^\"]*\")|(['][^']*['])                        {/* console.log('<STRING>'+yytext);  */   return 'TEXT'; }
+(\"[^\"]*\"|['][^']*['])                        {/* console.log('<STRING>'+yytext);  */   return 'TEXT'; }
 "true"                              {return 'TRUE';}
 "false"                             {return 'FALSE';}
 [0-9]+("."[0-9]+)?\b                {return 'NUM';}
@@ -19,9 +19,13 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 "AS"                                {return 'AS'}
 "SET"                                {return 'SET'}
 "AND"                                {return 'AND'}
+"OR"                                {return 'OR'}
 "INPUT"                                {return 'INPUT'}
 "PRINT"                                {return 'PRINT'}
-
+"IF"                                {return 'IF'}
+"THEN"                                {return 'THEN'}
+"END"                                {return 'END'}
+"ELSEIF"                                {return 'ELSEIF'}
 /*ARITMETICAS*/
 "INT"                                 {return 'INT';}
 "STRING"                              {return 'STRING';}
@@ -60,10 +64,11 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 /lex
 
 /* operator associations and precedence */
-%left UMINUS
-%right '!'
+%left UMINU
+%left '!'
 %left '&&'
-%left '||'
+%left '||' 
+%left OR AND
 %left '==' '!=' '<' '<=' '>' '>='
 %left '+' '-'
 %left '*' '/'
@@ -83,25 +88,45 @@ acciones
     |realizar
     ;
 realizar 
-/*asignar datos a la tabla*/
-    : asignar_informacion_tabla ';' 
-    /*asignar tabla*/  
-    | tabla {return $$;}
+ /*asignar tabla*/
+    :tabla ';' {return $$;} 
+     /*asignar datos a la tabla*/
+    | asignar_informacion_tabla ';'
     /*declarar variables*/
-    | declarar
-    | asignar_valor seguir
-    |imprimir
+    | declarar asignar 
+    /*asignar valor*/
+    | asignar_valor seguir 
+    /*imprimir*/
+    | imprimir ';'
+    | if
     ;
-imprimir : PRINT '(' ')' '' ;
-dato_secuencia :dato_secuencia ',' dato | dato; 
+if 
+    :
+      IF o_p THEN acciones final_if END IF ';' 
+    ;
+final_if 
+    :
+    ELSE acciones 
+    | ELSEIF o_p THEN acciones final_if
+    | 
+    ;
+/*imprimir*/
+imprimir : PRINT '(' dato_secuencia ')'  ;
+dato_secuencia 
+    :dato_secuencia ',' dato 
+    | dato
+    ; 
 /*ASIGNAR VALORES*/
-seguir :';' | AND asignar ';';
+seguir :  ';' | AND asignar ;
 asignar_valor 
     :
     asignar_valor  ',' asignar
     |SET asignar
     ;
-asignar : asignar NAMEV '=' dato | NAMEV '=' dato;
+asignar 
+    : asignar NAMEV '=' dato 
+    | NAMEV '=' dato
+    ;
 /*declaracion de variables*/
 declarar 
     : 
@@ -111,11 +136,11 @@ secuencia_nombres
     :secuencia_nombres ','  NAMEV
     |NAMEV
     ;
-siguiente : |  ;
 asignar 
     : '=' dato ';'
     | ';' 
     ;
+/*asignar datos a la tabla*/
 asignar_informacion_tabla 
     :
     asignar_informacion_tabla ','  nombre_atributo '=' dato 
@@ -130,7 +155,7 @@ dato
 /*estructura de la tabla*/
 tabla 
     : 
-    TABLE_NAME '(' atributo_tabla ')' ';'
+    TABLE_NAME '(' atributo_tabla ')' 
     ;
 atributo_tabla 
     : 
@@ -138,6 +163,7 @@ atributo_tabla
     |nombre_atributo tipo_atributo
     ;
 nombre_atributo : PROPERTY_NAME | TABLE_NAME;
+/*listado atributo*/
 tipo_atributo
     :
     INT
@@ -156,12 +182,6 @@ e
         {$$ = $1 * $3;}
     | e '/' e
         {$$ = $1 / $3;}
-    | e '!'
-        {{
-          $$ = (function fact(n) { 
-	    return n == 0 ? 1 : fact(n - 1) * n; 
-	  })($1);
-        }}
     | '-' e                 %prec UMINUS
         {$$ = -$2;}
     | '(' e ')'
@@ -182,8 +202,44 @@ p
     |p '>=' p
     |p '||' p
     |p '&&' p
+    |p OR p
     |TRUE
     |FALSE
     |e
     |NAMEV
+    ;
+o_p 
+    : o_p '+' o_p 
+    | o_p '-' o_p
+        {$$ = $1 - $3;}
+    | o_p '*' o_p
+        {$$ = $1 * $3;}
+    | o_p '/' o_p
+        {$$ = $1 / $3;}
+    | o_p '!'
+        {{
+          $$ = (function fact(n) { 
+	    return n == 0 ? 1 : fact(n - 1) * n; 
+	  })($1);
+        }}
+    | '-' o_p                 %prec UMINUS
+        {$$ = -$2;}
+    | '(' o_p ')'
+        {$$ = $2;}
+    |o_p OR o_p
+    |o_p AND o_p
+        |o_p '!=' o_p
+    |o_p '==' o_p
+    |o_p '<' o_p
+    |o_p '>' o_p
+    |o_p '<=' o_p
+    |o_p '>=' o_p
+    |o_p '||' o_p
+    |o_p '&&' o_p
+
+        | NUM
+        {$$ = Number(yytext);}
+        |NAMEV
+    |TRUE
+    |FALSE
     ;
