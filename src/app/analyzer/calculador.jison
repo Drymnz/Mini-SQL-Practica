@@ -26,6 +26,11 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 "THEN"                                {return 'THEN'}
 "END"                                {return 'END'}
 "ELSEIF"                                {return 'ELSEIF'}
+"SELECT"                                {return 'SELECT'}
+"FROM"                                {return 'FROM'}
+"WHERE"                                {return 'WHERE'}
+"LIMIT"                                {return 'LIMIT'}
+"OFFSET"                                {return 'OFFSET'}
 /*ARITMETICAS*/
 "INT"                                 {return 'INT';}
 "STRING"                              {return 'STRING';}
@@ -40,10 +45,11 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 /*RELACIONAL*/
 "!="                                 {return '!=';}
 "=="                                 {return '==';}
-"<"                                  {return '<';}
-">"                                  {return '>';}
 "<="                                 {return '<=';}
 ">="                                 {return '>=';}
+"<>"                                 {return '<>';}
+"<"                                  {return '<';}
+">"                                  {return '>';}
 "!"                                  {return '!';}
 "||"                                 {return '||';}
 "&&"                                 {return '&&';}
@@ -69,7 +75,7 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 %left '&&'
 %left '||' 
 %left OR AND
-%left '==' '!=' '<' '<=' '>' '>='
+%left '==' '!=' '<' '<=' '>' '>=' '<>'
 %left '+' '-'
 %left '*' '/'
 
@@ -98,11 +104,42 @@ realizar
     | asignar_valor seguir 
     /*imprimir*/
     | imprimir ';'
-    | if
+    /*if*/
+    | if END IF ';' 
+     /*select*/
+    | select 
     ;
+select
+    :
+    SELECT col_todo FROM nombre_atributo tipjo_filtro 
+    ;
+tipjo_filtro
+    : WHERE  o_p ';'
+    | LIMIT dato ';'
+    | OFFSET dato ';'
+    ;
+col_todo
+    :
+    '*'
+    |  bucle_serie
+    ;
+bucle_serie
+    : bucle_serie ',' serie
+    |serie
+    ;
+serie
+    :PROPERTY_NAME
+    | TABLE_NAME
+    | NAMEV
+    ;
+nombre_serie 
+    :nombre_serie ',' nombre_atributo
+    |nombre_atributo
+    ;
+/*if*/
 if 
     :
-      IF o_p THEN acciones final_if END IF ';' 
+      IF o_p THEN acciones final_if 
     ;
 final_if 
     :
@@ -236,10 +273,13 @@ o_p
     |o_p '>=' o_p
     |o_p '||' o_p
     |o_p '&&' o_p
+    |o_p '<>' o_p
 
         | NUM
         {$$ = Number(yytext);}
         |NAMEV
-    |TRUE
-    |FALSE
+    | TRUE
+    | nombre_atributo
+    | FALSE
+    | TEXT
     ;

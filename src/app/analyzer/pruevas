@@ -46,3 +46,28 @@ ELSE
 SET @dec1 = 1;
 SET @id = 1;
 END IF;
+IF @name == "Cameron" AND (@dec == 12.5 OR @dec + 1 >= 100) THEN
+SET @dec1 = @id;
+SET @id = INPUT("Ingrese el id a buscar: ");
+ELSEIF @name == 'Jose' THEN
+SET @id = 100;
+PRINT ('Looking for id', @id);
+END IF;
+IF @id == 7 OR @id == 10 THEN
+IF @email = 'email@gmail.com' THEN
+SET @email = 'my-email@gmail.com';
+END IF;
+SET @name = INPUT("Ingrese el nombre a buscar: ");
+SET @dec = INPUT("Ingrese la edad a buscar: ");
+ELSE
+SET @dec1 = 1;
+SET @id = 1;
+END IF;
+
+
+SELECT * FROM person WHERE id == 1;
+SELECT * FROM person WHERE name == @name AND gender == "MALE";
+SELECT * FROM person WHERE name == @name OR gender == "MALE";
+SELECT first_name, id, age FROM person WHERE age >= 10 + 1 AND @id <> 1;
+SELECT name, location FROM actor WHERE active == TRUE && location <>
+'guatemala';
