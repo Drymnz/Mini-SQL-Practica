@@ -14,7 +14,7 @@ export class EditorComponent{
 
   codeModel: CodeModel = {
     language: 'sql',
-    uri: 'main.json',
+    uri: 'main.sql',
     value: ''
   };
 
