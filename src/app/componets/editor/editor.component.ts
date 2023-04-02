@@ -27,9 +27,9 @@ export class EditorComponent{
   };
   vista(){
     try {
-      console.log(this.codeModel.value);
       const result =calculador.parse(this.codeModel.value);
-      this.resut = 'Resultado ' + result;
+      //this.resut = result;
+      console.log(result);
     } catch (error) {
       console.log("Error ");
       console.log(error);

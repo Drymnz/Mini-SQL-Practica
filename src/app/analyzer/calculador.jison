@@ -1,71 +1,81 @@
 
 /* description: Parses and executes mathematical expressions. */
 /* lexical grammar */
+%{
+    function printText(yytext) {
+    console.log(yytext);
+  }
+%}
 %lex
 ID          [a-zA-Z]([a-zA-Z0-9])+
 %%
 [#][^\n]*\n   	                        {}
+[-][-][^\n]*\n   	                        {}
 \s+                   /* skip whitespace */
 \f+   					                {}
 \n+   					                {}
 \r+   					                {}
 \v+   					                {}
-(\"[^\"]*\"|['][^']*['])                {/* console.log('<STRING>'+yytext);  */   return 'TEXT'; }
-"true"                                  {return 'TRUE';}
-"false"                                 {return 'FALSE';}
-[0-9]+("."[0-9]+)?\b                    {return 'NUM';}
-"@"{ID}                                 {return 'NAMEV'}
-"DECLARE"                               {return 'DECLARE'}
-"AS"                                    {return 'AS'}
-"SET"                                   {return 'SET'}
-"AND"                                   {return 'AND'}
-"OR"                                    {return 'OR'}
-"NOT"                                    {return 'NOT'}
-"INPUT"                                 {return 'INPUT'}
-"PRINT"                                 {return 'PRINT'}
-"IF"                                    {return 'IF'}
-"THEN"                                  {return 'THEN'}
-"END"                                   {return 'END'}
-"ELSEIF"                                {return 'ELSEIF'}
-"SELECT"                                {return 'SELECT'}
-"FROM"                                  {return 'FROM'}
-"WHERE"                                 {return 'WHERE'}
-"LIMIT"                                 {return 'LIMIT'}
-"OFFSET"                                {return 'OFFSET'}
+(\"[^\"]*\"|['][^']*['])                {printText(yytext+'  TEXT');return 'TEXT'; }
+"true"                                  {printText(yytext+'  TRUE');return 'TRUE';}
+"false"                                 {printText(yytext+'  FALSE');return 'FALSE';}
+[0-9]+("."[0-9]+)?\b                    {printText(yytext+'  NUM');return 'NUM';}
+"@"{ID}                                 {printText(yytext+'  NAMEV');return 'NAMEV'}
+"DECLARE"                               {printText(yytext+'  DECLARE');return 'DECLARE'}
+"AS"                                    {printText(yytext+'  AS');return 'AS'}
+"SET"                                   {printText(yytext+'  SET');return 'SET'}
+"AND"                                   {printText(yytext+'  AND');return 'AND'}
+"OR"                                    {printText(yytext+'  OR');return 'OR'}
+"NOT"                                   {printText(yytext+'  NOT');return 'NOT'}
+"INPUT"                                 {printText(yytext+'  INPUT');return 'INPUT'}
+"PRINT"                                 {printText(yytext+'  PRINT');return 'PRINT'}
+
+"IF"                                    {printText(yytext+'  IF');return 'IF'}
+"THEN"                                  {printText(yytext+'  THEN');return 'THEN'}
+"END"                                   {printText(yytext+'  END');return 'END'}
+"END"                                   {printText(yytext+'  END');return 'END'}
+"ELSE"                                  {printText(yytext+'  ELSE');return 'ELSE'}
+"ELSEIF"                                 {printText(yytext+'  ELSEIF');return 'ELSEIF'}
+
+"SELECT"                                {printText(yytext+'  SELECT');return 'SELECT'}
+"FROM"                                  {printText(yytext+'  FROM');return 'FROM'}
+"WHERE"                                 {printText(yytext+'  WHERE');return 'WHERE'}
+"LIMIT"                                 {printText(yytext+'  LIMIT');return 'LIMIT'}
+"OFFSET"                                {printText(yytext+'  OFFSET');return 'OFFSET'}
 /*ARITMETICAS*/
-"INT"                                   {return 'INT';}
-"STRING"                                {return 'STRING';}
-"TEXT"                                  {return 'TEX';}
-"DECIMAL"                               {return 'DECIMAL';}
-"BOOLEAN"                               {return 'BOOLEAN';}
+"INT"                                   {printText(yytext+'  INT');return 'INT';}
+"STRING"                                {printText(yytext+'  STRING');return 'STRING';}
+"TEXT"                                  {printText(yytext+'  TEX');return 'TEX';}
+"DECIMAL"                               {printText(yytext+'  DECIMAL');return 'DECIMAL';}
+"BOOLEAN"                               {printText(yytext+'  BOOLEAN');return 'BOOLEAN';}
 /*ARITMETICAS*/
-"*"                                     {return '*';}
-"/"                                     {return '/';}
-"-"                                     {return '-';}
-"+"                                     {return '+';}
+"*"                                     {printText(yytext+'  *');return '*';}
+"/"                                     {printText(yytext+'  /');return '/';}
+"-"                                     {printText(yytext+'  -');return '-';}
+"+"                                     {printText(yytext+'  +');return '+';}
 /*RELACIONAL*/
-"!="                                    {return '!=';}
-"=="                                    {return '==';}
-"<="                                    {return '<=';}
-">="                                    {return '>=';}
-"<>"                                    {return '<>';}
-"<"                                     {return '<';}
-">"                                     {return '>';}
-"!"                                     {return '!';}
-"||"                                    {return '||';}
-"&&"                                    {return '&&';}
+"!="                                    {printText(yytext+'  !=');return '!=';}
+"=="                                    {printText(yytext+'  ==');return '==';}
+"<="                                    {printText(yytext+'  <=');return '<=';}
+">="                                    {printText(yytext+'  >=');return '>=';}
+"<>"                                    {printText(yytext+'  <>');return '<>';}
+"<"                                     {printText(yytext+'  <');return '<';}
+">"                                     {printText(yytext+'  >');return '>';}
+"!"                                     {printText(yytext+'  !');return '!';}
+"||"                                    {printText(yytext+'  ||');return '||';}
+"&&"                                    {printText(yytext+'  &&');return '&&';}
 /*AGRUPACION*/
-"("                                     {return '(';}
-")"                                     {return ')';}
+"("                                     {printText(yytext+'  (');return '(';}
+")"                                     {printText(yytext+'  )');return ')';}
 /*OTROS*/
-";"                                     {return ';';}
-","                                     {return ',';}
-"="                                     {return '=';}
+";"                                     {printText(yytext+'  ;');return ';';}
+","                                     {printText(yytext+'  ,');return ',';}
+"="                                     {printText(yytext+'  =');return '=';}
 /*TOKEN COMPLEJOS*/
-[a-zA-Z][a-zA-Z0-9]+([_]+[a-zA-Z0-9]+)+ {return 'PROPERTY_NAME'}
-{ID}                                    {return 'TABLE_NAME'}
-<<EOF>>                                 {return 'EOF';}
-.                                       {console.log('<ERROR>'+yytext);return 'INVALID';}
+[a-zA-Z][a-zA-Z0-9]+([_]+[a-zA-Z0-9]+)+ {printText(yytext+'  PROPERTY_NAME');return 'PROPERTY_NAME'}
+{ID}                                    {printText(yytext+'  TABLE_NAME');return 'TABLE_NAME'}
+<<EOF>>                                 {printText(yytext+'  EOF');return 'EOF';}
+.                                       {printText(yytext+'  INVALID');return 'INVALID';}
 
 /lex
 
@@ -95,7 +105,7 @@ acciones
     ;
 realizar 
  /*CREAR TABLA*/
-    :tabla e_p_c {return $$;} 
+    :tabla e_p_c 
      /*ASIGNA NUEVO ELEMENTO A TABLA*/
     | asignar_informacion_tabla e_p_c
     /*IMPRIMIR*/
@@ -260,10 +270,11 @@ e
     | INPUT '(' TEXT ')' 
     | TEXT 
     | u_v
+    | FALSE
+    | TRUE
     ;
-u_v 
-    : serie  a_v
-    ;
+    
+u_v  : serie  a_v ;
 a_v
     : '=' e
     |

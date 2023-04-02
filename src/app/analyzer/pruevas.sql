@@ -12,7 +12,7 @@ id=9,first_name="Tiler",gender="Male",age=20;
 id=10,first_name="Deane",gender="Male",age=30;
 # definición de la table actor
 actor(name STRING, active BOOLEAN, location STRING);
-name="Thom", active=false && true, location="Baraçais";
+name="Thom", active= false && true, location="Baraçais";
 name="Carmel", active=true, location="Huaqiao";
 name="Darwin", active=true, location="København";
 name="Clarance", active=true, location="Dobrzeń Wielki";
@@ -78,7 +78,7 @@ SELECT name, location FROM actor WHERE active = TRUE AND location <>
 'guatemala';
 SELECT name, location FROM actor WHERE NOT (active = TRUE AND location <>
 'guatemala');
-SELECT * FROM student LIMIT 10 OFFSET 15 + 5
+SELECT * FROM student LIMIT 10 OFFSET 15 + 5 ;
 
 
 
