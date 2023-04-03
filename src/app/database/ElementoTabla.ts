@@ -1,14 +1,17 @@
 import { Token } from "src/app/database/Token" 
-export  class Tabla extends Token{
-    name: any;
+import { Asignacion } from "./Asignacion";
+
+export  class ElementoTabla extends Token{
+
+  listadoAtributos:Asignacion[] = [];
 
     constructor(
         line: number,
         column: number,
-        name: any,
+        listadoAtributos:Asignacion[] = []
       ) {
         super(line, column);
-        this.name = name ;
+        this.listadoAtributos = listadoAtributos;
       }
     
 }

@@ -4,7 +4,7 @@
 %{
     function printText(yytext) {
         /*sector de pruevas*/
-    console.log(yytext);
+    //console.log(yytext);
   }
 %}
 %lex
@@ -20,7 +20,8 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 (\"[^\"]*\"|['][^']*['])                {printText(yytext+'  TEXT');return 'TEXT'; }
 "true"                                  {printText(yytext+'  TRUE');return 'TRUE';}
 "false"                                 {printText(yytext+'  FALSE');return 'FALSE';}
-[0-9]+("."[0-9]+)?\b                    {printText(yytext+'  NUM');return 'NUM';}
+[0-9]+("."[0-9]+)\b                     {printText(yytext+'  DECIMAL');return 'DECIMAL';}
+[0-9]+                                  {printText(yytext+'  NUM');return 'NUM';}
 "@"{ID}                                 {printText(yytext+'  NAMEV');return 'NAMEV'}
 "DECLARE"                               {printText(yytext+'  DECLARE');return 'DECLARE'}
 "AS"                                    {printText(yytext+'  AS');return 'AS'}
@@ -107,7 +108,7 @@ realizar
  /*CREAR TABLA*/
     :tabla e_p_c  { $$ = $1; }
      /*ASIGNA NUEVO ELEMENTO A TABLA*/
-    | asignar_informacion_tabla e_p_c { $$ = $1; }
+    | asignar_informacion_tabla e_p_c { $$ = new yy.ElementoTabla(this._$.first_line, this._$.first_column, $1); }
     /*IMPRIMIR*/
     | imprimir e_p_c { $$ = $1; }
     /*DECLARAR VARIABLE*/
@@ -158,9 +159,9 @@ bucle_serie
     ;
 
 serie
-    : PROPERTY_NAME
-    | TABLE_NAME
-    | NAMEV
+    : PROPERTY_NAME { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
+    | TABLE_NAME { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
+    | NAMEV { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
     ;
 nombre_serie 
     :nombre_serie ',' nombre_atributo
@@ -202,35 +203,33 @@ asignar
 
 /*IMPRIMIR*/
 
-imprimir : PRINT '(' dato_secuencia ')' ;
+imprimir : PRINT '(' dato_secuencia ')' { $$ = new yy.Imprimir(this._$.first_line, this._$.first_column, $3); } ; 
 
 dato_secuencia 
-    :dato_secuencia ',' e_d 
-    | e_d
+    :dato_secuencia ',' e_d {$$.push($3);}
+    | e_d {$$ = []; $$.push($1);}
     ; 
     
-
 /*ASIGNA NUEVO ELEMENTO A TABLA*/
 
 asignar_informacion_tabla 
     :
-    asignar_informacion_tabla ','  nombre_atributo '=' e_d 
-    |nombre_atributo '=' e_d 
+    asignar_informacion_tabla ',' s_a_i {$$.push($3);}
+    |s_a_i {$$ = []; $$.push($1);}
     ; 
+
+s_a_i :nombre_atributo '=' e_d { $$ = new yy.Asignacion(this._$.first_line, this._$.first_column, $1, $3); } ;
 /*CREAR TABLA*/
 
 tabla : TABLE_NAME '(' e_a_c_t ')' { $$ = new yy.Tabla(this._$.first_line, this._$.first_column, $1, $3); } ;
 
 atributo_tabla 
     : 
-    atributo_tabla nuveo_atributo { $$ = $1; $$.push($2); }
-    | { $$ = []; }
+    atributo_tabla ',' nuveo_atributo {$$.push($3);}
+    | nuveo_atributo {$$ = []; $$.push($1);}
     ;
 
-nuveo_atributo 
-    : nombre_atributo e_f_t_t  { $$ = new yy.Atributo(this._$.first_line, this._$.first_column, $1, $2); }
-    | ',' nuveo_atributo {$$ = $2;}
-    ;
+nuveo_atributo : nombre_atributo e_f_t_t  { $$ = new yy.Atributo(this._$.first_line, this._$.first_column, $1, $2); } ;
 
 nombre_atributo 
     : 
@@ -245,43 +244,45 @@ tipo_atributo
     |STRING { $$ = yy.TipoDato.STRING; }
     |DECIMAL { $$ = yy.TipoDato.DECIMAL; }
     |BOOLEAN { $$ = yy.TipoDato.BOOLEAN; }
-    |TEX { $$ = $1; }
+    |TEX { $$ = yy.TipoDato.STRING; }
     ;
 /*OPERACIONES*/
-dato : e ;
+dato : e { $$ = $1; } ;
 e
     /*OPERACION MATEMATICA*/
-    : e '+' e {$$ = $1 + $3;}
-    | e '-' e {$$ = $1 - $3;}
-    | e '*' e {$$ = $1 * $3;}
-    | e '/' e {$$ = $1 / $3;}
-    | '-' e   %prec UMINUS {$$ = -$2;}
+    : e '+' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.SUMA,$1,  $3); }
+    | e '-' e  { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.RESTA,$1,  $3); }
+    | e '*' e  { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.MULTIPLICACION,$1,  $3); }
+    | e '/' e  { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.DIVISION,$1,  $3); }
+    | '-' e   %prec UMINUS { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.NEGATIVO,undefined,$2 ); }
     | '(' e ')' {$$ = $2;}
     /*OPERACION RELACIONAL*/
-    | e '==' e 
-    | e '!=' e 
-    | e '<' e 
-    | e '<=' e 
-    | e '>' e 
-    | e '>=' e 
-    | e '<>' e 
-    | e OR e 
-    | e AND e 
-    | e '||' e 
-    | e '&&' e 
-    | '!' e 
-    | NOT e
+    | e '==' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.IGUAL,$1,  $3); }
+    | e '!=' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.NO_IGUAL,$1,  $3); }
+    | e '<' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.MENOR,$1,  $3); }
+    | e '<=' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.MENOR_IGUAL,$1,  $3); }
+    | e '>' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.MAYOR,$1,  $3); }
+    | e '>=' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.MAYOR_IGUAL,$1,  $3); }
+    | e '<>' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.NO_IGUAL,$1,  $3); }
+    | e OR e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.OR,$1,  $3); }
+    | e AND e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.AND,$1,  $3); }
+    | e '||' e  { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.OR,$1,  $3); }
+    | e '&&' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.AND,$1, $3); }
+    | '!' e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.NEGACION,undefined,$2 ); }
+    | NOT e { $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.NEGACION,undefined,$2); }
     /*DATOS A OPERAR*/
-    | NUM {$$ = Number(yytext);}
-    | INPUT '(' TEXT ')' 
-    | TEXT  {  }
-    | u_v
-    | FALSE
-    | TRUE
+    | DECIMAL  { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.DECIMAL); }
+    | NUM { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.INT); }
+    | INPUT '(' TEXT ')' { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.ENTRADA); }
+    | TEXT  { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.STRING); }
+    | u_v {$$ = $1;}
+    //BOOLEAN
+    | FALSE { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.BOOLEAN); }
+    | TRUE { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.BOOLEAN); }
     ;
     
-u_v  : serie  a_v ;
+u_v  : serie  a_v { $$ = $1; } ;
 a_v
-    : '=' e
+    : '=' e 
     |
     ;

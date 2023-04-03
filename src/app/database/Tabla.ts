@@ -39,5 +39,7 @@ export enum TipoDato {
     INT,
     DECIMAL,
     STRING,
-    BOOLEAN
+    BOOLEAN,
+    VARIABLE,
+    ENTRADA
 }

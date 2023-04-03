@@ -1,4 +1,5 @@
 # definición de la table person
+PRINT ('Looking for id', 7, 'or', 10, '.');
 person(id INT,first_name STRING, gender STRING,age INT);
 id=1,first_name="Ivan",gender="Male",age=39;
 id=2,first_name="Roderich",gender="Polygender",age=32;
@@ -35,6 +36,8 @@ SET @flag = 12 > @id AND @name = "Cameron";
 SET @dec = 12.5, @dec1 = 12 / 4;
 SET @name = INPUT("Ingrese el nombre a buscar: ");
 SET @dec = INPUT("Ingrese la edad a buscar: ");
+
+
 IF @id = 7 OR @id = 10 THEN
 SET @name = INPUT("Ingrese el nombre a buscar: ");
 SET @dec = INPUT("Ingrese la edad a buscar: ");
