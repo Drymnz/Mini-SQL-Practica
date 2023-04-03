@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "compilar":"jison src/app/analyzer/calculador.jison -o src/app/analyzer/calculador.js"
+    "compilar":"jison src/app/analyzer/calculador.jison -o src/app/analyzer/analizar.js"
   },
   "private": true,
   "dependencies": {

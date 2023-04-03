@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CodeModel } from '@ngstack/code-editor';
+import { Parser } from "src/app/analyzer/parser";
 
-declare var calculador : any;
+//declare var calculador : any;
+declare var parser: any;
 
 @Component({
   selector: 'app-editor',
@@ -27,9 +29,10 @@ export class EditorComponent{
   };
   vista(){
     try {
-      const result =calculador.parse(this.codeModel.value);
+      const parser = new Parser(this.codeModel.value);
+      parser.parse();
+      //const result =calculador.parse(this.codeModel.value);
       //this.resut = result;
-      console.log(result);
     } catch (error) {
       console.log("Error ");
       console.log(error);

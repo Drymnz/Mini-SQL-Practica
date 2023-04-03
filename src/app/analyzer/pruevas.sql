@@ -109,6 +109,7 @@ SET @dec1 = @id;
 SET @id = INPUT("Ingrese el id a buscar: ");
 ELSEIF @name = 'Jose' THEN
 SET @id = 100;
+PRINT ('Looking for id', @id);
 END IF;
 -- consultas
 SELECT * FROM person WHERE id = 1;

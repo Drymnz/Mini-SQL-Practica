@@ -3,6 +3,7 @@
 /* lexical grammar */
 %{
     function printText(yytext) {
+        /*sector de pruevas*/
     console.log(yytext);
   }
 %}
@@ -96,37 +97,36 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 %% /* language grammar */
 /*inicio de la gramatica */
 expressions
-    : acciones EOF
-    | EOF
+    : acciones EOF  { return $1; }
     ;
 acciones 
-    : acciones realizar
-    |realizar
+    : acciones realizar  { $$ = $1; $$.push($2); }
+    | { $$ = []; }
     ;
 realizar 
  /*CREAR TABLA*/
-    :tabla e_p_c 
+    :tabla e_p_c  { $$ = $1; }
      /*ASIGNA NUEVO ELEMENTO A TABLA*/
-    | asignar_informacion_tabla e_p_c
+    | asignar_informacion_tabla e_p_c { $$ = $1; }
     /*IMPRIMIR*/
-    | imprimir e_p_c
+    | imprimir e_p_c { $$ = $1; }
     /*DECLARAR VARIABLE*/
-    | declarar asignar 
+    | declarar asignar  { $$ = $1; }
     /*ASIGNAR VALOR*/
-    | asignar_valor  e_p_c
+    | asignar_valor  e_p_c { $$ = $1; }
     /*if*/
-    | if END IF e_p_c 
+    | if END IF e_p_c  { $$ = $1; }
      /*SELECT*/
-    | select e_p_c
+    | select e_p_c { $$ = $1; }
     ;
 /*MANEJO DE ERRORES SINTACTICO*/
-e_p_c : ';'  | ERROR ; //error te falta ;
-e_f_t : FROM | ERROR;   //te falto el from
-e_t_f : THEN |  ERROR;  //te falta if indicar then
-e_d   : dato |  ERROR;  //te falto indicar la asignacion
-e_c_s : col_todo |  ERROR;  //te falto indicar que columna
-e_a_c_t: atributo_tabla |  ERROR; //te falta atributos a la tabla
-e_f_t_t: tipo_atributo |  ERROR;    //falta tipo en atributo de tabla
+e_p_c : ';' { $$ = $1; }  | ERROR ; //error te falta ;
+e_f_t : FROM { $$ = $1; } | ERROR;   //te falto el from
+e_t_f : THEN { $$ = $1; } |  ERROR;  //te falta if indicar then
+e_d   : dato { $$ = $1; } |  ERROR;  //te falto indicar la asignacion
+e_c_s : col_todo { $$ = $1; }|  ERROR;  //te falto indicar que columna
+e_a_c_t: atributo_tabla { $$ = $1; } |  ERROR; //te falta atributos a la tabla
+e_f_t_t: tipo_atributo { $$ = $1; } |  ERROR;    //falta tipo en atributo de tabla
 /*SELECT*/
 
 select : SELECT e_c_s e_f_t nombre_atributo s_f ;
@@ -188,7 +188,7 @@ asignar
 
 /*DECLARAR VARIABLE*/
 
-declarar : DECLARE secuencia_nombres AS tipo_atributo ;
+declarar : DECLARE secuencia_nombres AS e_f_t_t ;
 
 secuencia_nombres 
     :secuencia_nombres ','  NAMEV
@@ -219,27 +219,33 @@ asignar_informacion_tabla
     ; 
 /*CREAR TABLA*/
 
-tabla : TABLE_NAME '(' e_a_c_t ')' ;
+tabla : TABLE_NAME '(' e_a_c_t ')' { $$ = new yy.Tabla(this._$.first_line, this._$.first_column, $1, $3); } ;
 
 atributo_tabla 
     : 
-    atributo_tabla ','  nombre_atributo e_f_t_t 
-    |nombre_atributo e_f_t_t
+    atributo_tabla nuveo_atributo { $$ = $1; $$.push($2); }
+    | { $$ = []; }
     ;
+
+nuveo_atributo 
+    : nombre_atributo e_f_t_t  { $$ = new yy.Atributo(this._$.first_line, this._$.first_column, $1, $2); }
+    | ',' nuveo_atributo {$$ = $2;}
+    ;
+
 nombre_atributo 
     : 
-     PROPERTY_NAME 
-    |TABLE_NAME
+     PROPERTY_NAME { $$ = $1; }
+    |TABLE_NAME { $$ = $1; }
     ;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*listado atributo*/
 tipo_atributo
     :
-    INT
-    |STRING
-    |DECIMAL
-    |BOOLEAN
-    |TEX
+    INT { $$ = yy.TipoDato.INT; }
+    |STRING { $$ = yy.TipoDato.STRING; }
+    |DECIMAL { $$ = yy.TipoDato.DECIMAL; }
+    |BOOLEAN { $$ = yy.TipoDato.BOOLEAN; }
+    |TEX { $$ = $1; }
     ;
 /*OPERACIONES*/
 dato : e ;
@@ -268,7 +274,7 @@ e
     /*DATOS A OPERAR*/
     | NUM {$$ = Number(yytext);}
     | INPUT '(' TEXT ')' 
-    | TEXT 
+    | TEXT  {  }
     | u_v
     | FALSE
     | TRUE

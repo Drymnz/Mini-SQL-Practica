@@ -28,7 +28,7 @@
               "src/styles.css"
             ],
             "scripts": [
-              "src/app/analyzer/calculador.js"
+              "src/app/analyzer/analizar.js"
             ]
           },
           "configurations": {
