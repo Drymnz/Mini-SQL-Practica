@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "compilar":"jison src/app/analyzer/calculador.jison -o src/app/analyzer/analizar.js"
+    "compilar": "jison src/app/analyzer/calculador.jison -o src/app/analyzer/analizar.js"
   },
   "private": true,
   "dependencies": {
@@ -19,8 +19,9 @@
     "@angular/platform-browser": "^15.2.0",
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/router": "^15.2.0",
-    "@ngstack/code-editor": "^5.0.0",
+    "@ngstack/code-editor": "5.0.0",
     "jison": "^0.4.18",
+    "monaco-editor": "0.37.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
