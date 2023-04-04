@@ -50,9 +50,13 @@ export class Parser {
   parse() {
     try {
       this.realizar = analizar.parse(this.source);
-      console.log(this.realizar);
+      //console.log(this.realizar);
     } catch(error) {
       console.error(error);
     }
+  }
+
+  getRealizar() : Token[]{
+    return this.realizar;
   }
 }

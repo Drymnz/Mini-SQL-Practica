@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CodeModel } from '@ngstack/code-editor';
 import { Parser } from "src/app/analyzer/parser";
+import { Memoria } from 'src/app/Memoria/Memoria';
 
 //declare var calculador : any;
 declare var parser: any;
@@ -12,7 +13,8 @@ declare var parser: any;
 })
 export class EditorComponent{
   theme = 'vs-dark';
-  resut=""
+  resut = '';
+  memoria:Memoria = new Memoria();
 
   codeModel: CodeModel = {
     language: 'sql',
@@ -31,6 +33,7 @@ export class EditorComponent{
     try {
       const parser = new Parser(this.codeModel.value);
       parser.parse();
+      this.memoria.cargar(parser.getRealizar());
       //const result =calculador.parse(this.codeModel.value);
       //this.resut = result;
     } catch (error) {
