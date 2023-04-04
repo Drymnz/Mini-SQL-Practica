@@ -112,13 +112,13 @@ realizar
     /*IMPRIMIR*/
     | imprimir e_p_c { $$ = $1; }
     /*DECLARAR VARIABLE*/
-    | declarar asignar  { $$ = $1; }
+    | declarar  { $$ = $1; }
     /*ASIGNAR VALOR*/
     | asignar_valor  e_p_c { $$ = $1; }
+    /*SELECT*/
+    | select e_p_c { $$ = $1; }
     /*if*/
     | if END IF e_p_c  { $$ = $1; }
-     /*SELECT*/
-    | select e_p_c { $$ = $1; }
     ;
 /*MANEJO DE ERRORES SINTACTICO*/
 e_p_c : ';' { $$ = $1; }  | ERROR ; //error te falta ;
@@ -130,75 +130,82 @@ e_a_c_t: atributo_tabla { $$ = $1; } |  ERROR; //te falta atributos a la tabla
 e_f_t_t: tipo_atributo { $$ = $1; } |  ERROR;    //falta tipo en atributo de tabla
 /*SELECT*/
 
-select : SELECT e_c_s e_f_t nombre_atributo s_f ;
+select : SELECT e_c_s e_f_t nombre_atributo s_f 
+{ $$ = new yy.Consulta(this._$.first_line, this._$.first_column,$2,$4,$5); };
 
 s_f
-    :v_f
-    |
+    :v_f{$$=$1;}
+    | {$$=undefined;}
     ;
 
 v_f
-    : v_f  tipjo_filtro
-    | tipjo_filtro
+    : v_f  tipjo_filtro {$$.push($2);}
+    | tipjo_filtro {$$ = []; $$.push($1);}
     ;
 
 tipjo_filtro
     : WHERE  e_d 
+    { $$ = new yy.Filtro(this._$.first_line, this._$.first_column, yy.TipoFiltro.WHERE,$2); }
     | LIMIT e_d 
+    { $$ = new yy.Filtro(this._$.first_line, this._$.first_column, yy.TipoFiltro.LIMIT,$2); }
     | OFFSET e_d 
+    { $$ = new yy.Filtro(this._$.first_line, this._$.first_column, yy.TipoFiltro.OFFSET,$2); }
     ;
 col_todo
     :
-    '*'
-    |  bucle_serie
+    '*' {$$=$1;}
+    |  bucle_serie {$$=$1;}
     ;
 
 bucle_serie
-    : bucle_serie ',' serie
-    |serie
+    : bucle_serie ',' serie {$$.push($3);}
+    |serie {$$ = []; $$.push($1);}
     ;
 
 serie
-    : PROPERTY_NAME { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
-    | TABLE_NAME { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
-    | NAMEV { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
-    ;
-nombre_serie 
-    :nombre_serie ',' nombre_atributo
-    |nombre_atributo
+    : PROPERTY_NAME //{$$=$1;}
+    { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
+    | TABLE_NAME //{$$=$1;}
+    { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
+    | NAMEV //{$$=$1;}
+    { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.VARIABLE); }
     ;
 /*IF*/
 
-if : IF e_d e_t_f  acciones final_if  ;
+if : IF e_d e_t_f  acciones final_if 
+{ $$ = new yy.InstruccionIF(this._$.first_line, this._$.first_column,$2,$4,$5)};
 
 final_if 
     :
     ELSE acciones 
+    { $$ = new yy.InstruccionELSE(this._$.first_line, this._$.first_column,$2)}
     | ELSEIF e_d e_t_f acciones final_if
-    | 
+    { $$ = new yy.InstruccionELSEIF(this._$.first_line, this._$.first_column,$2,$4,$5)}
+    | {$$=undefined;}
     ;
 
 /*ASIGNAR VALOR*/
 
-asignar_valor  : SET asignar ;
+asignar_valor  : SET asignar  { $$ = new yy.Set(this._$.first_line, this._$.first_column, $2); };
 
 asignar 
-    : asignar ',' NAMEV '=' e_d 
-    | NAMEV '=' e_d
+    : asignar ',' NAMEV '=' e_d  {$$.push(new yy.Asignacion(this._$.first_line, this._$.first_column, $3, $5)); } 
+    | NAMEV '=' e_d {$$ = [];  $$.push(new yy.Asignacion(this._$.first_line, this._$.first_column, $1, $3)); } 
     ;
 
 /*DECLARAR VARIABLE*/
 
-declarar : DECLARE secuencia_nombres AS e_f_t_t ;
+declarar : DECLARE secuencia_nombres AS e_f_t_t asignar 
+{ $$ = new yy.Declaracion(this._$.first_line, this._$.first_column, $2, $4 , $5); };
 
 secuencia_nombres 
-    :secuencia_nombres ','  NAMEV
-    |NAMEV
+    :secuencia_nombres ','  NAMEV {$$.push($3);}
+    |NAMEV {$$ = []; $$.push($1);}
     ;
 
 asignar 
-    : '=' e_d e_p_c
-    | e_p_c 
+    : '=' e_d e_p_c  {$$=$2;}
+    | e_p_c {$$=undefined;}
     ;
 
 /*IMPRIMIR*/
@@ -281,8 +288,15 @@ e
     | TRUE { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.BOOLEAN); }
     ;
     
-u_v  : serie  a_v { $$ = $1; } ;
+u_v  : serie  a_v { 
+     /**vereificar*/ 
+ if ($2 == undefined) {
+    $$ = $1;
+ } else {
+    $$ = new yy.Opereaciones(this._$.first_line, this._$.first_column, yy.TipoOperacion.IGUAL,$1,$2);
+ }
+    } ;
 a_v
-    : '=' e 
-    |
+    : '=' e { $$ = $2; }
+    | {$$=undefined;}
     ;

@@ -6,6 +6,12 @@ import { Opereaciones , TipoOperacion } from "../database/Opereaciones";
 import { Asignacion } from "../database/Asignacion";
 import { ElementoTabla } from "../database/ElementoTabla";
 import { Imprimir } from "../database/Imprimir";
+import { Declaracion } from "../database/Declaracion";
+import { Set } from "../database/Set";
+import { Consulta } from "../database/Consulta";
+import { Filtro , TipoFiltro} from "../database/Filtro";
+import { InstruccionIF , InstruccionELSE, InstruccionELSEIF } from "../database/InstruccionIF";
+
 
 declare var analizar: any;
 
@@ -28,6 +34,19 @@ export class Parser {
     analizar.yy.ElementoTabla = ElementoTabla;
     //Imprimir
     analizar.yy.Imprimir = Imprimir;
+    //Declaracion
+    analizar.yy.Declaracion = Declaracion;
+    // Set 
+    analizar.yy.Set = Set;
+    // Consulta 
+    analizar.yy.Consulta = Consulta;
+    // Filtro 
+    analizar.yy.Filtro = Filtro;
+    analizar.yy.TipoFiltro = TipoFiltro;
+    // InstruccionIF 
+    analizar.yy.InstruccionIF = InstruccionIF;   
+    analizar.yy.InstruccionELSE = InstruccionELSE;    
+    analizar.yy.InstruccionELSEIF = InstruccionELSEIF;    
   }
 
   parse() {
