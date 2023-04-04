@@ -1,4 +1,3 @@
-//import { Assignment } from "src/app/model/assignment";
 import { Token } from "src/app/database/Token"
 import { Tabla,Atributo,TipoDato } from "src/app/database/Tabla"
 import { Valor } from "../database/Valor";
@@ -21,7 +20,6 @@ export class Parser {
 
   constructor(source: string) {
     this.source = source;
-    //analizar.yy.Assignment = Assignment;
     //crear tabla
     analizar.yy.Tabla = Tabla;
     analizar.yy.Atributo = Atributo;
@@ -32,12 +30,12 @@ export class Parser {
     analizar.yy.TipoOperacion = TipoOperacion;
     analizar.yy.Asignacion = Asignacion;
     analizar.yy.ElementoTabla = ElementoTabla;
-    //Imprimir
-    analizar.yy.Imprimir = Imprimir;
     //Declaracion
     analizar.yy.Declaracion = Declaracion;
-    // Set 
+    // ASIGNAR 
     analizar.yy.Set = Set;
+    //Imprimir
+    analizar.yy.Imprimir = Imprimir;    
     // Consulta 
     analizar.yy.Consulta = Consulta;
     // Filtro 

@@ -14,7 +14,7 @@ export  class Tabla extends Token{
         this.name = name ;
         this.listadoAtributo = listadoAtributo;
       }
-    
+
 }
 
 export class Atributo extends Token{
