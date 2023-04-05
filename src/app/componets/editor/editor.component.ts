@@ -34,12 +34,12 @@ export class EditorComponent{
       const parser = new Parser(this.codeModel.value);
       parser.parse();
       this.memoria.cargar(parser.getRealizar());
-      //console.log(parser.getRealizar());
+      console.log(parser.getRealizar());
       console.log(this.memoria);
       //const result =calculador.parse(this.codeModel.value);
       //this.resut = result;
     } catch (error) {
-      console.log("Error ");
+      console.log("Error");
       console.log(error);
     }
     

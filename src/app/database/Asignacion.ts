@@ -1,10 +1,11 @@
 import { Token } from "src/app/database/Token" 
+import { Valor } from "./Valor";
+import { Opereaciones } from "./Opereaciones";
 
 export class Asignacion extends Token{
 
     nombre: any;
-    valor:Token | undefined;
-    valor_final = undefined;
+    private valor:Token | undefined;
 
     constructor(
         line: number,
@@ -17,4 +18,14 @@ export class Asignacion extends Token{
         this.valor = valor;
       }
 
+     getValor()   {
+      if(this.valor instanceof Valor){
+        this.valor;
+      }else{
+        if (this.valor instanceof Opereaciones) {
+          const convertir:Opereaciones = this.valor;
+          this.valor = convertir.getValue();
+        }
+      }
+    }
 }
