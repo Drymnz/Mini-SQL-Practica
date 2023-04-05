@@ -1,5 +1,8 @@
 # definición de la table person
 PRINT ('Looking for id', 7, 'or', 10, '.');
+
+
+
 person(id INT,first_name STRING, gender STRING,age INT);
 id=1,first_name="Ivan",gender="Male",age=39;
 id=2,first_name="Roderich",gender="Polygender",age=32;

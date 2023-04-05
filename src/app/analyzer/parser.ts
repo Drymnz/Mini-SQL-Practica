@@ -10,7 +10,7 @@ import { Set } from "../database/Set";
 import { Consulta } from "../database/Consulta";
 import { Filtro , TipoFiltro} from "../database/Filtro";
 import { InstruccionIF , InstruccionELSE, InstruccionELSEIF } from "../database/InstruccionIF";
-
+import { ErrorParser , TipoErrorParser } from "../Memoria/ErrorPersonal";
 
 declare var analizar: any;
 
@@ -44,7 +44,10 @@ export class Parser {
     // InstruccionIF 
     analizar.yy.InstruccionIF = InstruccionIF;   
     analizar.yy.InstruccionELSE = InstruccionELSE;    
-    analizar.yy.InstruccionELSEIF = InstruccionELSEIF;    
+    analizar.yy.InstruccionELSEIF = InstruccionELSEIF;   
+    // Error 
+    analizar.yy.ErrorParser = ErrorParser;    
+    analizar.yy.TipoErrorParser = TipoErrorParser;    
   }
 
   parse() {

@@ -2,6 +2,7 @@
 /* description: Parses and executes mathematical expressions. */
 /* lexical grammar */
 %{
+    listadoErrores = [];
     function printText(yytext) {
         /*sector de pruevas*/
     //console.log(yytext);
@@ -77,7 +78,10 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 [a-zA-Z][a-zA-Z0-9]+([_]+[a-zA-Z0-9]+)+ {printText(yytext+'  PROPERTY_NAME');return 'PROPERTY_NAME'}
 {ID}                                    {printText(yytext+'  TABLE_NAME');return 'TABLE_NAME'}
 <<EOF>>                                 {printText(yytext+'  EOF');return 'EOF';}
-.                                       {printText(yytext+'  INVALID');return 'INVALID';}
+.                                       {printText(yytext+'  INVALID');
+//listadoErrores.push(
+    //new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.INVALID,yytext));
+}
 
 /lex
 
@@ -98,11 +102,12 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 %% /* language grammar */
 /*inicio de la gramatica */
 expressions
-    : acciones EOF  { return $1; }
+    : acciones EOF  { $$.push(listadoErrores); return $1; }
+    | EOF {$$ = []; $$.push(listadoErrores); return $1;}
     ;
 acciones 
     : acciones realizar  { $$ = $1; $$.push($2); }
-    | { $$ = []; }
+    | realizar {$$ = []; $$.push($1);}
     ;
 realizar 
  /*CREAR TABLA*/
@@ -121,7 +126,8 @@ realizar
     | if END IF e_p_c  { $$ = $1; }
     ;
 /*MANEJO DE ERRORES SINTACTICO*/
-e_p_c : ';' { $$ = $1; }  | ERROR ; //error te falta ;
+e_p_c : ';' { $$ = $1; }  | ERROR 
+{listadoErrores.push(new yy.ElementoTabla(this._$.first_line, this._$.first_column,yy.TipoErrorParser.INVALID,yytext));}; //error te falta ;
 e_f_t : FROM { $$ = $1; } | ERROR;   //te falto el from
 e_t_f : THEN { $$ = $1; } |  ERROR;  //te falta if indicar then
 e_d   : dato { $$ = $1; } |  ERROR;  //te falto indicar la asignacion

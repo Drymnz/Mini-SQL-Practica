@@ -4,6 +4,7 @@ export class Asignacion extends Token{
 
     nombre: any;
     valor:Token | undefined;
+    valor_final = undefined;
 
     constructor(
         line: number,
