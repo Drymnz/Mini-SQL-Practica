@@ -41,8 +41,19 @@ export class Memoria {
 
   insertElementoTabla(element:ElementoTabla):Boolean {
     if (this.tablas.length > 0) {
-      this.list = this.tablas.filter(p=>p.tablas.listadoAtributo.filter(p=>p.name == element.listadoAtributos[0].nombre));
-      return (this.list.length>0);
+      this.list = this.tablas.filter(//TablaEjecucion memoria
+        p1=>p1.tablas.listadoAtributo.filter(//Tabla memoria
+        p2=>//Listado Atributo de tabla memoria
+         element.listadoAtributos.filter(
+          p3 =>p3.nombre == p2.name // este atributo tiene el mismo nombre
+          ).length == 1// tiene la misma cantidad de atributos 
+          ).length == p1.tablas.listadoAtributo.length
+          //Tabla
+          //TablaEjecucion
+          );
+      console.log(this.list);
+      console.log(element);
+      return (this.list.length==1);
     }
     return true;
   }

@@ -4,7 +4,7 @@ PRINT ('Looking for id', 7, 'or', 10, '.');
 
 
 person(id INT,first_name STRING, gender STRING,age INT);
-id=1,first_name="Ivan",gender="Male",age=39;
+id=1,first_name="Ivan",gender="Male",age=39+323/434*2;
 id=2,first_name="Roderich",gender="Polygender",age=32;
 id=3,first_name="Haley",gender="Male",age=33;
 id=4,first_name="Sheelagh",gender="Female",age=35;
