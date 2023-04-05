@@ -34,6 +34,9 @@ export class Memoria {
         if(element instanceof Declaracion){
           this.insertarVariable(element);
         }
+        if(element instanceof Set){
+          
+        }
       });
     }
   }
