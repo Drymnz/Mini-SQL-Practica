@@ -51,8 +51,6 @@ export class Memoria {
           //Tabla
           //TablaEjecucion
           );
-      console.log(this.list);
-      console.log(element);
       return (this.list.length==1);
     }
     return true;

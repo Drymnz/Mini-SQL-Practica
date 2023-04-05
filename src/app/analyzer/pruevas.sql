@@ -26,7 +26,8 @@ name="Perceval", active=true, location="Wohyń";
 name="Linn", active=false, location="Zarumilla";
 name="Darb", active=true, location="Novaya Lyalya";
 name="Lazar", active=true, location="Slobozia";
-# fin
+#fin
+
 DECLARE @name AS TEXT = "hello";
 DECLARE @email AS TEXT;
 DECLARE @id AS INT;

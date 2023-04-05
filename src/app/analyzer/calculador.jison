@@ -103,7 +103,7 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 /*inicio de la gramatica */
 expressions
     : acciones EOF  { $$.push(listadoErrores); return $1; }
-    | EOF {$$ = []; $$.push(listadoErrores); return $1;}
+    |  {$$ = []; $$.push(listadoErrores); return $1;}
     ;
 acciones 
     : acciones realizar  { $$ = $1; $$.push($2); }
