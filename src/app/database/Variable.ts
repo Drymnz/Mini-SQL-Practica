@@ -1,11 +1,9 @@
-import { Token } from "src/app/database/Token" 
 import { TipoDato } from "./Tabla";
+import { Valor } from "./Valor";
 
-export class Variable extends Token{
+export class Variable extends Valor{
 
     nombre: String | undefined;
-    valor: any;
-    tipo:TipoDato;
 
     constructor(
         line: number,
@@ -14,10 +12,8 @@ export class Variable extends Token{
         tipo:TipoDato,
         valor: any
       ) {
-        super(line, column);
+        super(line, column,valor,tipo);
         this.nombre = nombre;
-        this.tipo = tipo ;
-        this.valor = valor;
       }
 
 }

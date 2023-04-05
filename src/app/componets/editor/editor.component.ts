@@ -33,8 +33,9 @@ export class EditorComponent{
     try {
       const parser = new Parser(this.codeModel.value);
       parser.parse();
-      this.memoria.cargar(parser.getRealizar());
-      //console.log(parser.getRealizar());
+      const resultadoAnalize = parser.getRealizar();
+      this.memoria.cargar(resultadoAnalize);
+      //console.log(resultadoAnalize);
       console.log(this.memoria);
       //const result =calculador.parse(this.codeModel.value);
       //this.resut = result;

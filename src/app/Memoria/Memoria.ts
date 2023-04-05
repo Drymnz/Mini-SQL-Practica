@@ -13,14 +13,17 @@ import { Filtro , TipoFiltro} from "../database/Filtro";
 import { InstruccionIF , InstruccionELSE, InstruccionELSEIF } from "../database/InstruccionIF";
 // para mantener
 import { TablaEjecucion } from "./TablaEjecucion";
+import { Variable } from "../database/Variable";
 
 export class Memoria {
 
   tablas:Array<TablaEjecucion> = new Array;
   private list:Array<TablaEjecucion> = [];
+  private listVariables:Array<Variable> = [];
 
   cargar(realizar: Token[]) {
     if (realizar != undefined && realizar.length>0) {
+      this.listVariables = [] ;
       realizar.forEach(element => {
         if (element instanceof Tabla && this.insertTabla(element)) {
           this.tablas.push(new TablaEjecucion(element));
@@ -28,6 +31,9 @@ export class Memoria {
         if (element instanceof ElementoTabla && this.insertElementoTabla(element)) {
           this.list[0].addElemento(element);
         } 
+        if(element instanceof Declaracion){
+          this.insertarVariable(element);
+        }
       });
     }
   }
@@ -54,5 +60,28 @@ export class Memoria {
       return (this.list.length==1);
     }
     return true;
+  }
+
+
+  insertarVariable(element:Declaracion){
+    const linea = element.line;
+    const column = element.column;
+    const valorVariable = element.valor;
+    const tipoVariable = element.tipo;
+    if (this.listVariables.length<1) {
+      element.nombre.forEach(itmString => {
+        this.listVariables.push(new Variable(linea,column,itmString,tipoVariable,valorVariable));
+      });
+    } else {
+      var nombre;
+      var boolenInsert = true;
+      const ver:Declaracion = element;
+      var listadoInserVariable = element.nombre.filter(p=> this.listVariables.filter(p2 => p2.nombre == p).length == 0 );
+      if (listadoInserVariable.length>0) {
+        listadoInserVariable.forEach(itmString => {
+          this.listVariables.push(new Variable(linea,column,itmString,tipoVariable,valorVariable));
+        });
+      }
+    }
   }
 }
