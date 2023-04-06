@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import {MatTableModule} from '@angular/material/table';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router ,ActivatedRoute } from '@angular/router';
+import { Memoria } from 'src/app/Memoria/Memoria';
 
 export interface PeriodicElement {
   name: string;
@@ -25,12 +25,27 @@ const ELEMENT_DATA: PeriodicElement[] = [
   templateUrl: './tabla.component.html',
   styleUrls: ['./tabla.component.css']
 })
-export class TablaComponent {
-  constructor(private router:Router){
+export class TablaComponent implements OnInit {
+
+  memoria:Memoria = new Memoria();
+  constructor(private router:Router, private activatedRoute:ActivatedRoute)
+  {
 
   }
+
+  ngOnInit(): void {
+    var textJsonMemoria;
+    this.activatedRoute.params.subscribe(
+     parser => 
+     textJsonMemoria = parser['id']
+    );
+    this.memoria = JSON.parse(String(textJsonMemoria)) as Memoria
+  }
+
+
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
+  
   irEditor(){
     this.router.navigate(['/']);
   }

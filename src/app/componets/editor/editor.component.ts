@@ -59,6 +59,6 @@ export class EditorComponent{
     
   }
   irMemoria(){
-    this.router.navigate(['lista-tabla']);
+    this.router.navigate(['lista-tabla',JSON.stringify(this.memoria)]);
   }
 }

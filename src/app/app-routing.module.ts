@@ -5,7 +5,7 @@ import { TablaComponent } from './componets/tabla/tabla.component';
 
 const routes: Routes = [
   {path:'',component:EditorComponent},
-  {path:'lista-tabla',component:TablaComponent}
+  {path:'lista-tabla/:id',component:TablaComponent}
 ];
 
 @NgModule({
