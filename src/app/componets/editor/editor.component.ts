@@ -12,6 +12,11 @@ declare var parser: any;
   styleUrls: ['./editor.component.css']
 })
 export class EditorComponent{
+
+  mostrarReportesErrorLexicoSintacticos:Boolean = false;
+  mostrarReportesSemanticos:Boolean = false;
+  mostrarMemoria:Boolean = false;
+  
   theme = 'vs-dark';
   resut = '';
   memoria:Memoria = new Memoria();
@@ -37,6 +42,9 @@ export class EditorComponent{
       this.memoria.cargar(resultadoAnalize);
       console.log(resultadoAnalize);
       console.log(this.memoria);
+      this.mostrarMemoria = this.memoria.tablas.length > 0; 
+      this.mostrarReportesErrorLexicoSintacticos = this.memoria.listReport.length > 0; 
+      this.mostrarReportesSemanticos = this.memoria.listSemantico.length > 0; 
       //const result =calculador.parse(this.codeModel.value);
       //this.resut = result;
     } catch (error) {

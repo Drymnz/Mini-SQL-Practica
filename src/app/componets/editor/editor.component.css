@@ -1,13 +1,27 @@
+* {
+    --valor-right-buttom: 15px ;
+}
 .b-c-v {
     position: absolute;
     border: 0;
     height: 30px;
     width: 75px;
-    bottom: 10px;
-    right: 15px;
     background-color: aqua;
+    right: var(--valor-right-buttom);
 }
 .b-c-v:hover {
     background-color: aquamarine;
     cursor: pointer;
+}
+#b-m {
+    top: 10px;
+}
+#b-r {
+    top: 50px;
+}
+#b-r-s {
+    top: 90px;
+}
+#b-c {
+    bottom: 10px;
 }

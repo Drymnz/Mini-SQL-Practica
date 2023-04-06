@@ -7,6 +7,9 @@
         /*sector de pruevas*/
     //console.log(yytext);
   }
+  function addErroLexico(yytext) {
+//listadoErrores.push(new yy.ErrorParser(0, 0,yy.TipoErrorParser.INVALID,yytext));
+  }
 %}
 %lex
 ID          [a-zA-Z]([a-zA-Z0-9])+
@@ -79,8 +82,8 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 {ID}                                    {printText(yytext+'  TABLE_NAME');return 'TABLE_NAME'}
 <<EOF>>                                 {printText(yytext+'  EOF');return 'EOF';}
 .                                       {printText(yytext+'  INVALID');
-//listadoErrores.push(
-    //new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.INVALID,yytext));
+addErroLexico(yytext);
+return 'INVALID';
 }
 
 /lex
@@ -124,16 +127,23 @@ realizar
     | select e_p_c { $$ = $1; }
     /*if*/
     | if END IF e_p_c  { $$ = $1; }
+    | INVALID { $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.INVALID,$1); }
     ;
 /*MANEJO DE ERRORES SINTACTICO*/
 e_p_c : ';' { $$ = $1; }  | ERROR 
-{listadoErrores.push(new yy.ElementoTabla(this._$.first_line, this._$.first_column,yy.TipoErrorParser.INVALID,yytext));}; //error te falta ;
-e_f_t : FROM { $$ = $1; } | ERROR;   //te falto el from
-e_t_f : THEN { $$ = $1; } |  ERROR;  //te falta if indicar then
-e_d   : dato { $$ = $1; } |  ERROR;  //te falto indicar la asignacion
-e_c_s : col_todo { $$ = $1; }|  ERROR;  //te falto indicar que columna
-e_a_c_t: atributo_tabla { $$ = $1; } |  ERROR; //te falta atributos a la tabla
-e_f_t_t: tipo_atributo { $$ = $1; } |  ERROR;    //falta tipo en atributo de tabla
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.PUNTO_COMA,' '); }; //error te falta ;
+e_f_t : FROM { $$ = $1; } | ERROR
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.FROM,' '); };   //te falto el from
+e_t_f : THEN { $$ = $1; } |  ERROR
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.THEN,' '); };  //te falta if indicar then
+e_d   : dato { $$ = $1; } |  ERROR
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_DATA,' '); };  //te falto indicar la asignacion
+e_c_s : col_todo { $$ = $1; }|  ERROR
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_COL,' '); };  //te falto indicar que columna
+e_a_c_t: atributo_tabla { $$ = $1; } |  ERROR
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISSING_TABLE_ATTRIBUTE,' '); }; //te falta atributos a la tabla
+e_f_t_t: tipo_atributo { $$ = $1; } |  ERROR
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_TYPE_ATTRIBUTE,' '); };    //falta tipo en atributo de tabla
 /*SELECT*/
 
 select : SELECT e_c_s e_f_t nombre_atributo s_f 

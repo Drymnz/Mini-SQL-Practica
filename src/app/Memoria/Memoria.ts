@@ -11,6 +11,8 @@ import { Set } from "../database/Set";
 import { Consulta } from "../database/Consulta";
 import { Filtro, TipoFiltro } from "../database/Filtro";
 import { InstruccionIF, InstruccionELSE, InstruccionELSEIF } from "../database/InstruccionIF";
+import { ErrorEjecucion, ErrorParser } from "./ErrorPersonal";
+
 // para mantener
 import { TablaEjecucion } from "./TablaEjecucion";
 import { Variable } from "../database/Variable";
@@ -20,6 +22,12 @@ export class Memoria {
   tablas: Array<TablaEjecucion> = new Array;
   private list: Array<TablaEjecucion> = [];
   private listVariables: Array<Variable> = [];
+  consultas: Array<TablaEjecucion> = new Array;
+  listReport: Array<ErrorParser> = new Array;
+  listSemantico: Array<ErrorEjecucion> = new Array;
+
+  
+
 
   cargar(realizar: Token[]) {
     if (realizar != undefined && realizar.length > 0) {
@@ -39,6 +47,12 @@ export class Memoria {
         }
         if(element instanceof Imprimir){
           this.imprimir(element);
+        }
+        if(element instanceof Consulta){
+          
+        }
+        if (element instanceof ErrorParser) {
+          this.listReport.push(element);
         }
       });
     }
@@ -123,7 +137,7 @@ export class Memoria {
     const filtroDos =filtroUna.split('\"').join('');
     console.log(filtroDos);
   }
-  
+
   buscarValorVariable(buscar:String):String | undefined{
     var variable:String | undefined;
     const list:Array<Variable> = this.listVariables.filter(p=> p.nombre == buscar);
