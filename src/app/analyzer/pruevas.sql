@@ -1,4 +1,8 @@
 # definición de la table person
+
+DECLARE @name AS TEXT = "hello";
+PRINT ('Looking for id', 7, 'or', 10, @name);
+
 PRINT ('Looking for id', 7, 'or', 10, '.');
 person(id INT,first_name STRING, gender STRING,age INT);
 id=1,first_name="Ivan",gender="Male",age=39+323/434*2;

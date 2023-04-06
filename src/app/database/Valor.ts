@@ -17,4 +17,7 @@ export class Valor extends Token{
         this.tipo = tipo ;
       }
 
+      getValorString():String{
+        return this.valor as String;
+      }
 }

@@ -37,6 +37,9 @@ export class Memoria {
         if (element instanceof Set) {
           this.asignacionValoresVariables(element);
         }
+        if(element instanceof Imprimir){
+          this.imprimir(element);
+        }
       });
     }
   }
@@ -96,5 +99,38 @@ export class Memoria {
         });
       });
     }
+  }
+  imprimir(element:Imprimir){
+    var imprimirTexto:String = ' ';
+    element.listadoValores.forEach(element => {
+      if (element instanceof Valor) {
+        if (!(element.tipo == TipoDato.VARIABLE)) {
+          imprimirTexto+= element.valor + ' ';
+        }else{
+          imprimirTexto+=this.buscarValorVariable(element.valor as String) + '';
+        }      
+      }
+      if (element instanceof Opereaciones) {
+        const valorResult = element.getValue() as Valor;
+        if (!(valorResult.tipo == TipoDato.VARIABLE)) {
+          imprimirTexto+= valorResult.valor + ' ';
+        }else{
+          imprimirTexto+=this.buscarValorVariable(valorResult.valor as String) + '';
+        } 
+      }
+    });
+    const filtroUna =imprimirTexto.split('\'').join('');
+    const filtroDos =filtroUna.split('\"').join('');
+    console.log(filtroDos);
+  }
+  
+  buscarValorVariable(buscar:String):String | undefined{
+    var variable:String | undefined;
+    const list:Array<Variable> = this.listVariables.filter(p=> p.nombre == buscar);
+    if (list.length>0) {
+      const usar:String = list[0].getValorString();
+      return usar + '';
+    }
+    return undefined;
   }
 }

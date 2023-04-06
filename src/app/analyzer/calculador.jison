@@ -287,7 +287,7 @@ e
     | DECIMAL  { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.DECIMAL); }
     | NUM { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.INT); }
     | INPUT '(' TEXT ')' { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.ENTRADA); }
-    | TEXT  { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.STRING); }
+    | TEXT  {  $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.STRING); }
     | u_v {$$ = $1;}
     //BOOLEAN
     | FALSE { $$ = new yy.Valor(this._$.first_line, this._$.first_column, $1, yy.TipoDato.BOOLEAN); }
