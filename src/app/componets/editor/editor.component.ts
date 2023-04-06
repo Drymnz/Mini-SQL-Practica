@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CodeModel } from '@ngstack/code-editor';
 import { Parser } from "src/app/analyzer/parser";
 import { Memoria } from 'src/app/Memoria/Memoria';
@@ -12,6 +13,10 @@ declare var parser: any;
   styleUrls: ['./editor.component.css']
 })
 export class EditorComponent{
+
+  constructor(private router:Router){
+
+  }
 
   mostrarReportesErrorLexicoSintacticos:Boolean = false;
   mostrarReportesSemanticos:Boolean = false;
@@ -52,5 +57,8 @@ export class EditorComponent{
       console.log(error);
     }
     
+  }
+  irMemoria(){
+    this.router.navigate(['lista-tabla']);
   }
 }

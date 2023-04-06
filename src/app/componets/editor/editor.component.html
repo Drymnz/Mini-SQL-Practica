@@ -8,5 +8,5 @@
 <button class="b-c-v" id="b-c" (click)="vista()">Compilar</button>
 <button class="b-c-v" id="b-r" *ngIf="mostrarReportesErrorLexicoSintacticos">Reportes L/S </button>
 <button class="b-c-v" id="b-r-s" *ngIf="mostrarReportesSemanticos">Reportes Semanticos</button>
-<button class="b-c-v" id="b-m" *ngIf="mostrarMemoria">Memoria</button>
+<button class="b-c-v" id="b-m" (click)="irMemoria()"*ngIf="mostrarMemoria">Memoria</button>
 <h1>{{resut}}</h1>
