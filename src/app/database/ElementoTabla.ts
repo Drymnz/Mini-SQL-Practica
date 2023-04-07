@@ -1,5 +1,6 @@
 import { Token } from "src/app/database/Token" 
 import { Asignacion } from "./Asignacion";
+import { Valor } from "./Valor";
 
 export  class ElementoTabla extends Token{
 
@@ -15,9 +16,12 @@ export  class ElementoTabla extends Token{
       }
       getListadoValores():String[]
       {
-        const listado:String[]|undefined = [];
+        const listado:String[] = [];
         this.listadoAtributos.forEach(element => {
-          listado.push(String(element.getValor()));
+          const valorInsert:Valor = element.getValor();
+          if (valorInsert != undefined) {
+            listado.push(String(valorInsert.valor));
+          }
         });
         return listado;
       }

@@ -13,9 +13,9 @@ export class TablaEjecucion {
     addElemento(elemento:ElementoTabla){
         this.listadoElementos.push(elemento);
     }
-    getListadoValores():String[]|undefined
+    getListadoValores():String[]
     {
-      const listado:String[]|undefined = [];
+      const listado:String[] = [];
       this.listadoElementos.forEach(element => {
         listado.push(String(element.getListadoValores()));
       });

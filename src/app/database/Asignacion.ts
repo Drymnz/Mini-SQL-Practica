@@ -18,7 +18,7 @@ export class Asignacion extends Token{
         this.valor = valor;
       }
 
-     getValor():Valor | undefined  {
+     getValor():Valor{
       if(this.valor instanceof Valor){
         return this.valor;
       }else{
@@ -28,6 +28,5 @@ export class Asignacion extends Token{
         }
         return this.valor as Valor;
       }
-      return undefined;
     }
 }

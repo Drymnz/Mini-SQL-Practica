@@ -51,7 +51,6 @@ export class EditorComponent{
       const parser = new Parser(this.codeModel.value);
       parser.parse();
       const resultadoAnalize = parser.getRealizar();
-      console.log(resultadoAnalize);
       this.memoria.cargar(resultadoAnalize);
       this.mostrarMemoria = this.memoria.tablas.length > 0; 
       this.mostrarReportesErrorLexicoSintacticos = this.memoria.listReport.length > 0; 
