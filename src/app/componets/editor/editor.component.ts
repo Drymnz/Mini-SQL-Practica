@@ -1,22 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, ViewChild, Output , ComponentFactoryResolver} from '@angular/core';
+import { Router , ActivatedRoute} from '@angular/router';
 import { CodeModel } from '@ngstack/code-editor';
 import { Parser } from "src/app/analyzer/parser";
 import { Memoria } from 'src/app/Memoria/Memoria';
-
-//declare var calculador : any;
-declare var parser: any;
-
+import { MemoriaGlobalService } from 'src/app/servicio/memoria-global.service';
+import { DinamicoTablaMemoriaDirective } from 'src/app/directive/dinamico-tabla-memoria.directive';
+import { TablaMemoriaComponent } from '../tabla-memoria/tabla-memoria.component';
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.css']
 })
+
 export class EditorComponent{
-
-  constructor(private router:Router){
-
-  }
 
   mostrarReportesErrorLexicoSintacticos:Boolean = false;
   mostrarReportesSemanticos:Boolean = false;
@@ -26,12 +22,23 @@ export class EditorComponent{
   resut = '';
   memoria:Memoria = new Memoria();
 
+  @ViewChild(DinamicoTablaMemoriaDirective)
+   listadoTablas!:DinamicoTablaMemoriaDirective;
+
+  constructor
+  (
+    private router: Router, private activatedRoute: ActivatedRoute,
+    private usarMemoria:MemoriaGlobalService,
+    private addComponet:ComponentFactoryResolver
+  ) 
+  {
+  }
   codeModel: CodeModel = {
     language: 'sql',
     uri: 'main.sql',
     value: ''
   };
-
+  
   options = {
     contextmenu: true,
     minimap: {
@@ -44,21 +51,20 @@ export class EditorComponent{
       const parser = new Parser(this.codeModel.value);
       parser.parse();
       const resultadoAnalize = parser.getRealizar();
-      this.memoria.cargar(resultadoAnalize);
       console.log(resultadoAnalize);
-      console.log(this.memoria);
+      this.memoria.cargar(resultadoAnalize);
       this.mostrarMemoria = this.memoria.tablas.length > 0; 
       this.mostrarReportesErrorLexicoSintacticos = this.memoria.listReport.length > 0; 
       this.mostrarReportesSemanticos = this.memoria.listSemantico.length > 0; 
-      //const result =calculador.parse(this.codeModel.value);
-      //this.resut = result;
     } catch (error) {
-      console.log("Error");
       console.log(error);
     }
-    
   }
+  
   irMemoria(){
-    this.router.navigate(['lista-tabla',JSON.stringify(this.memoria)]);
+    const agregarComponete = this.addComponet.resolveComponentFactory(TablaMemoriaComponent);
+    this.listadoTablas?.viewcontainerref.clear()
+    const mostrar =  this.listadoTablas?.viewcontainerref.createComponent(agregarComponete);
+    mostrar.instance.cargarTablas(this.memoria.tablas);
   }
 }

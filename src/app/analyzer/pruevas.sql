@@ -29,6 +29,8 @@ name="Darb", active=true, location="Novaya Lyalya";
 name="Lazar", active=true, location="Slobozia";
 #fin
 
+
+
 DECLARE @name AS TEXT = "hello";
 DECLARE @email AS TEXT;
 DECLARE @id AS INT;

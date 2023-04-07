@@ -15,17 +15,25 @@ export  class Tabla extends Token{
         this.listadoAtributo = listadoAtributo;
       }
 
+      getListadoNombreAtriguto():String[]
+      {
+        var listado:String[] = [];
+        this.listadoAtributo.forEach(element => {
+          listado.push(String(element.name));
+        });
+        return listado;
+      }
 }
 
 export class Atributo extends Token{
 
-    name: any;
+    name: String;
     tipo:TipoDato;
 
     constructor(
         line: number,
         column: number,
-        name: any,
+        name: String,
         tipo:TipoDato
       ) {
         super(line, column);

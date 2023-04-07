@@ -16,6 +16,7 @@ import { ErrorEjecucion, ErrorParser } from "./ErrorPersonal";
 // para mantener
 import { TablaEjecucion } from "./TablaEjecucion";
 import { Variable } from "../database/Variable";
+import { MemoriaGlobalService } from "../servicio/memoria-global.service";
 
 export class Memoria {
 
@@ -25,9 +26,6 @@ export class Memoria {
   consultas: Array<TablaEjecucion> = new Array;
   listReport: Array<ErrorParser> = new Array;
   listSemantico: Array<ErrorEjecucion> = new Array;
-
-  
-
 
   cargar(realizar: Token[]) {
     if (realizar != undefined && realizar.length > 0) {

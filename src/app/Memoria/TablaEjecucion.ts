@@ -12,19 +12,15 @@ export class TablaEjecucion {
 
     addElemento(elemento:ElementoTabla){
         this.listadoElementos.push(elemento);
-        const varlo:Boolean[] = [];
-        this.tablas.listadoAtributo.forEach(element => {
-            const listado = elemento.listadoAtributos.filter(p=>p.nombre == element.name);
-            if (listado.length == 1) {
-                const item = listado[0];
-
-                //const valor_verificar = item.valor.run();
-                //typeof(valor_verificar);
-            } else {
-                varlo.push(false);
-            }
-        });
     }
-  
+    getListadoValores():String[]|undefined
+    {
+      const listado:String[]|undefined = [];
+      this.listadoElementos.forEach(element => {
+        listado.push(String(element.getListadoValores()));
+      });
+      return listado;
+    }
+
   }
   

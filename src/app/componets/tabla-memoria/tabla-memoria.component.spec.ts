@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TablaComponent } from './tabla.component';
+import { TablaMemoriaComponent } from './tabla-memoria.component';
 
-describe('TablaComponent', () => {
-  let component: TablaComponent;
-  let fixture: ComponentFixture<TablaComponent>;
+describe('TablaMemoriaComponent', () => {
+  let component: TablaMemoriaComponent;
+  let fixture: ComponentFixture<TablaMemoriaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TablaComponent ]
+      declarations: [ TablaMemoriaComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TablaComponent);
+    fixture = TestBed.createComponent(TablaMemoriaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

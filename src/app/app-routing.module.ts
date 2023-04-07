@@ -1,15 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditorComponent } from './componets/editor/editor.component';
-import { TablaComponent } from './componets/tabla/tabla.component';
+import { MemoriaGlobalService } from './servicio/memoria-global.service';
 
 const routes: Routes = [
   {path:'',component:EditorComponent},
-  {path:'lista-tabla/:id',component:TablaComponent}
+  {path:':memoria',component:EditorComponent},
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers:[MemoriaGlobalService]
 })
 export class AppRoutingModule { }

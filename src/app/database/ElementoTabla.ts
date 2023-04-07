@@ -13,5 +13,12 @@ export  class ElementoTabla extends Token{
         super(line, column);
         this.listadoAtributos = listadoAtributos;
       }
-    
+      getListadoValores():String[]
+      {
+        const listado:String[]|undefined = [];
+        this.listadoAtributos.forEach(element => {
+          listado.push(String(element.getValor()));
+        });
+        return listado;
+      }
 }
