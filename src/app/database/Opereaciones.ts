@@ -5,8 +5,8 @@ import { Valor } from "./Valor";
 export class Opereaciones extends Token {
 
   tipo: TipoOperacion;
-  derechaDato: Opereaciones | Valor;
-  izquierdaDato: Opereaciones | Valor;
+  private derechaDato: Opereaciones | Valor;
+  private izquierdaDato: Opereaciones | Valor;
   private valorFinal: Valor | undefined;
 
   constructor(
@@ -46,38 +46,90 @@ export class Opereaciones extends Token {
 
   private operar(izquierdaDato: Valor | undefined, derechaDato: Valor | undefined): Valor | undefined {
     if (izquierdaDato != undefined && derechaDato != undefined) {
+      const tipoValor: TipoDato = this.condicion(izquierdaDato.tipo, derechaDato.tipo);
       var valor;
       switch (this.tipo) {
         // num + num
         case TipoOperacion.SUMA:
           valor = Number(izquierdaDato.valor) + Number(derechaDato.valor);
-          return new Valor(this.line, this.column, valor, this.condicion(izquierdaDato.tipo, derechaDato.tipo));
-          // num - num
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // num - num
         case TipoOperacion.RESTA:
           valor = Number(izquierdaDato.valor) - Number(derechaDato.valor);
-          return new Valor(this.line, this.column, valor, this.condicion(izquierdaDato.tipo, derechaDato.tipo));
-          // num / num
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // num / num
         case TipoOperacion.DIVISION:
           const dividiendor = Number(derechaDato.valor)
           if (dividiendor != 0) {
             valor = Number(izquierdaDato.valor) / dividiendor;
-            return new Valor(this.line, this.column, valor, this.condicion(izquierdaDato.tipo, derechaDato.tipo));
+            return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
           } else {
-            return new Valor(this.line, this.column, 0, this.condicion(izquierdaDato.tipo, derechaDato.tipo));
+            return new Valor(this.line, this.column, 0, tipoValor);
           }
-          // num * num
+        // num * num
         case TipoOperacion.MULTIPLICACION:
           valor = Number(izquierdaDato.valor) * Number(derechaDato.valor);
-          return new Valor(this.line, this.column, valor, this.condicion(izquierdaDato.tipo, derechaDato.tipo));
-          // - num
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // - num
         case TipoOperacion.NEGATIVO:
           valor = - Number(derechaDato.valor);
-          return new Valor(this.line, this.column, valor, this.condicion(derechaDato.tipo, derechaDato.tipo));
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor && valor
+        case TipoOperacion.AND:
+          valor = izquierdaDato.valor && derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor && valor
+        case TipoOperacion.IGUAL:
+          valor = izquierdaDato.valor && derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor > valor
+        case TipoOperacion.MAYOR:
+          valor = izquierdaDato.valor > derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor < valor
+        case TipoOperacion.MENOR:
+          valor = izquierdaDato.valor < derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor >= valor
+        case TipoOperacion.MAYOR_IGUAL:
+          valor = izquierdaDato.valor >= derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor <= valor
+        case TipoOperacion.MENOR_IGUAL:
+          valor = izquierdaDato.valor <= derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // ! valor
+        case TipoOperacion.NEGACION:
+          valor = !(derechaDato.valor);
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor != valor
+        case TipoOperacion.NO_IGUAL:
+          valor = izquierdaDato.valor != derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
+        // valor || valor
+        case TipoOperacion.OR:
+          valor = izquierdaDato.valor || derechaDato.valor;
+          return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
         default:
           break;
       }
     }
     return undefined;
+  }
+
+  convercionValorToTipo(valor: any, tipoValor: TipoDato): any {
+    switch (tipoValor) {
+      case TipoDato.INT:
+        return Math.trunc(valor);
+      case TipoDato.DECIMAL:
+        return Number(valor);
+      case TipoDato.STRING:
+        return String(valor);
+      case TipoDato.BOOLEAN:
+        return (valor === "true");
+      default:
+        return valor
+    }
   }
 
   condicion(izquierdaDato: TipoDato, derechaDato: TipoDato): TipoDato {
@@ -89,7 +141,7 @@ export class Opereaciones extends Token {
         if (izquierdaDato == TipoDato.DECIMAL && derechaDato == TipoDato.DECIMAL) {
           return TipoDato.DECIMAL;
         }
-        if ((izquierdaDato == TipoDato.STRING && derechaDato == TipoDato.STRING) && this.tipo==TipoOperacion.SUMA) {
+        if ((izquierdaDato == TipoDato.STRING && derechaDato == TipoDato.STRING) && this.tipo == TipoOperacion.SUMA) {
           return TipoDato.STRING;
         }
         break;
@@ -108,8 +160,13 @@ export class Opereaciones extends Token {
           return TipoDato.DECIMAL;
         }
         break;
-      case TipoOperacion.NEGACION:
-        return derechaDato;
+      
+        case TipoOperacion.NEGATIVO:
+          return derechaDato;
+          case TipoOperacion.NEGACION:
+        case TipoOperacion.AND: case TipoOperacion.IGUAL: case TipoOperacion.MAYOR: case TipoOperacion.MAYOR_IGUAL:
+          case TipoOperacion.MENOR: case TipoOperacion.MENOR_IGUAL: case TipoOperacion.NO_IGUAL: case TipoOperacion.OR:
+          return TipoDato.BOOLEAN;
       default:
         break;
     }

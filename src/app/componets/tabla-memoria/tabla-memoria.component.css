@@ -28,6 +28,7 @@
     margin: 10px;
     background-color:var(--color-fondo-editor-code);
     border-radius: 10px;
+    border:   var(--color-letras-data) 3px solid;
   }
 
   .etiqueta-columan {
