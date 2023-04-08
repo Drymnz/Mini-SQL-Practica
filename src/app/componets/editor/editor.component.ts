@@ -1,4 +1,4 @@
-import { Component, EventEmitter, ViewChild, Output , ComponentFactoryResolver} from '@angular/core';
+import { Component, EventEmitter, ViewChild, Output , ComponentFactoryResolver, ComponentRef} from '@angular/core';
 import { Router , ActivatedRoute} from '@angular/router';
 import { CodeModel } from '@ngstack/code-editor';
 import { Parser } from "src/app/analyzer/parser";
@@ -52,6 +52,7 @@ export class EditorComponent{
       parser.parse();
       const resultadoAnalize = parser.getRealizar();
       this.memoria.cargar(resultadoAnalize);
+      console.log(resultadoAnalize)
       console.log(this.memoria)
       this.mostrarMemoria = this.memoria.tablas.length > 0; 
       this.mostrarReportesErrorLexicoSintacticos = this.memoria.listReport.length > 0; 
@@ -62,9 +63,20 @@ export class EditorComponent{
   }
   
   irMemoria(){
+    this.usarIr().instance.cargarTablas(this.memoria.tablas);
+  }
+
+  irReportesLS(){
+    this.usarIr().instance.cargarReportesLS(this.memoria.listReport);
+  }
+
+  irReportesDB(){
+    this.usarIr().instance.cargarTablas(this.memoria.tablas);
+  }
+
+  private usarIr():ComponentRef<TablaMemoriaComponent>{
     const agregarComponete = this.addComponet.resolveComponentFactory(TablaMemoriaComponent);
     this.listadoTablas?.viewcontainerref.clear()
-    const mostrar =  this.listadoTablas?.viewcontainerref.createComponent(agregarComponete);
-    mostrar.instance.cargarTablas(this.memoria.tablas);
+    return this.listadoTablas?.viewcontainerref.createComponent(agregarComponete);
   }
 }

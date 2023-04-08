@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { ErrorParser, TipoErrorParser } from 'src/app/Memoria/ErrorPersonal';
 import { TablaEjecucion } from 'src/app/Memoria/TablaEjecucion';
 import { ElemtentoTablaView, TablaView } from 'src/app/interface/tabla-view';
 
@@ -15,7 +16,7 @@ import { ElemtentoTablaView, TablaView } from 'src/app/interface/tabla-view';
 export class TablaMemoriaComponent {
 
   mostrarTablaView:TablaView[] = [];
-  tablas: Array<TablaEjecucion> = [];
+  private tablas: Array<TablaEjecucion> = [];
 
   constructor(){
 
@@ -35,8 +36,46 @@ export class TablaMemoriaComponent {
         const elementoInsert:ElemtentoTablaView = {listadoDatos:this.tablas[i].listadoElementos[index].getListadoValores()};
         listadoElementos.push(elementoInsert);
       }
-      const crearTablaVied:TablaView = {nombre:nombreInser,listado:listadoAtributos,listadoElementos:listadoElementos};
+      const crearTablaVied:TablaView = {nombre:nombreInser,columnas:listadoAtributos,listadoElementos:listadoElementos};
       this.mostrarTablaView.push(crearTablaVied);
+    }
+  }
+
+  cargarReportesLS(listReport: Array<ErrorParser> ){
+    const nombreTabla:String = "Reportes lexicos y sintacticos";
+    const listadoAtributos:String[] = [
+      "Linea" , 
+      "Columna" , 
+      "Lexema"  , 
+      "Tipo"
+    ];
+    const listadoElementos:ElemtentoTablaView[] = [];
+    for (let index = 0; index < listReport.length; index++) {
+      const tipo:String = this.stringTipoErrorParser(listReport[index].tipo);
+        const elementoInsert:ElemtentoTablaView = {
+          listadoDatos:[
+            String(listReport[index].line),
+            String(listReport[index].column),
+            String(listReport[index].lexema),
+            tipo
+          ]
+        };
+        listadoElementos.push(elementoInsert);
+    }
+    const crearTablaVied:TablaView = {
+      nombre:nombreTabla,
+      columnas:listadoAtributos,
+      listadoElementos:listadoElementos
+    };
+    this.mostrarTablaView.push(crearTablaVied);
+  }
+
+  stringTipoErrorParser(tipo:TipoErrorParser):String{
+    switch (tipo) {
+      case TipoErrorParser.PUNTO_COMA:
+        return "";
+      default:
+        return "";
     }
   }
 

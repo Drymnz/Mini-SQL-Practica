@@ -1,9 +1,8 @@
 // para analizar
 import { Token } from "src/app/database/Token"
-import { Tabla, Atributo, TipoDato } from "src/app/database/Tabla"
+import { Tabla , TipoDato } from "src/app/database/Tabla"
 import { Valor } from "../database/Valor";
 import { Opereaciones, TipoOperacion } from "../database/Opereaciones";
-import { Asignacion } from "../database/Asignacion";
 import { ElementoTabla } from "../database/ElementoTabla";
 import { Imprimir } from "../database/Imprimir";
 import { Declaracion } from "../database/Declaracion";
@@ -29,6 +28,9 @@ export class Memoria {
   cargar(realizar: Token[]) {
     if (realizar != undefined && realizar.length > 0) {
       this.listVariables = [];//variables solamente una ves
+      this.consultas = [];//variables solamente una ves
+      this.listReport = [];//variables solamente una ves
+      this.listSemantico = [];//variables solamente una ves
       realizar.forEach(element => {
         //realizar la tablas
         if (element instanceof Tabla && this.insertTabla(element)) {
@@ -50,10 +52,6 @@ export class Memoria {
         if (element instanceof Imprimir) {
           this.imprimir(element);
         }
-        //Listar los reportes de parsar
-        if (element instanceof ErrorParser) {
-          this.listReport.push(element);
-        }
         //Consulta un select *
         if (element instanceof Consulta) {
 
@@ -63,30 +61,42 @@ export class Memoria {
           //if
           //verifica si entro al if
           //const irThen = 
-             //this.cargar(element.listaAcciones);
+          //this.cargar(element.listaAcciones);
           //else
-            if (element.cola instanceof InstruccionELSE) {
-              //this.cargar(element.cola.listaAcciones);
-            }
-            if(element.cola instanceof InstruccionELSEIF){
-                    //const irThen = 
-                    //const enviar = element.cola as InstruccionIF;
-                    //this.cargar(enviar);
-            }
+          if (element.cola instanceof InstruccionELSE) {
+            //this.cargar(element.cola.listaAcciones);
+          }
+          if (element.cola instanceof InstruccionELSEIF) {
+            //const irThen = 
+            //const enviar = element.cola as InstruccionIF;
+            //this.cargar(enviar);
+          }
+          //Listar los reportes de parsar
+          if (element instanceof ErrorParser) {
+            this.listReport.push(element);
+          }
         }
       });
     }
   }
 
   insertTabla(element: Tabla): Boolean {
-    if (this.tablas.length > 0) {
+    if (this.tablas.length > 0 && this.limpiarTabla(element)) {
       return !(this.tablas.filter(p => p.tablas.name == element.name).length > 0);
     }
     return true;
   }
 
+  limpiarTabla(element: Tabla):boolean{
+    if (element.listadoAtributo instanceof ErrorParser) {
+      this.listReport.push(element.listadoAtributo);
+      return false;
+    }
+    return true;
+  }
+
   insertElementoTabla(element: ElementoTabla): Boolean {
-    if (this.tablas.length > 0) {
+    if (this.tablas.length > 0 && this.limpiarElementoTabla(element)) {
       this.list = this.tablas.filter(//TablaEjecucion memoria
         p1 => p1.tablas.listadoAtributo.filter(//Tabla memoria
           p2 =>//Listado Atributo de tabla memoria
@@ -102,6 +112,13 @@ export class Memoria {
     return true;
   }
 
+  limpiarElementoTabla(element: ElementoTabla):boolean{
+    if (element.listadoAtributos instanceof ErrorParser) {
+      this.listReport.push(element.listadoAtributos);
+      return false;
+    }
+    return true;
+  }
 
   insertarVariable(element: Declaracion) {
     const linea = element.line;
@@ -123,8 +140,16 @@ export class Memoria {
     }
   }
 
+  limpiarDeclaracion(element: Declaracion):boolean{
+    if (element.valor instanceof ErrorParser) {
+      this.listReport.push(element.valor);
+      return false;
+    }
+    return true;
+  }
+
   asignacionValoresVariables(element: Set) {
-    if (this.listVariables.length > 0) {
+    if (this.listVariables.length > 0 && this.limpiarSet(element)) {
       const itimEle: Set = element;
       this.listVariables.forEach(element_uno => {
         const listAsig = itimEle.listadoAsignacion.filter(p => p.nombre == element_uno.nombre);
@@ -135,29 +160,44 @@ export class Memoria {
     }
   }
 
+  limpiarSet(element: Set):boolean{
+    if (element.listadoAsignacion instanceof ErrorParser) {
+      this.listReport.push(element.listadoAsignacion);
+      return false;
+    }
+    return true;
+  }
+
   //para imprimir en consola la peticion de imprimir
   imprimir(element: Imprimir) {
     var imprimirTexto: String = ' ';
-    element.listadoValores.forEach(element => {
-      if (element instanceof Valor) {
-        if (!(element.tipo == TipoDato.VARIABLE)) {
-          imprimirTexto += element.valor + ' ';
-        } else {
-          imprimirTexto += this.buscarValorVariable(element.valor as String) + '';
+    if (element.listadoValores instanceof ErrorParser) {
+      this.listReport.push(element.listadoValores);
+    }else {
+      element.listadoValores.forEach(element => {
+        if (element instanceof Valor) {
+          if (!(element.tipo == TipoDato.VARIABLE)) {
+            imprimirTexto += element.valor + ' ';
+          } else {
+            imprimirTexto += this.buscarValorVariable(element.valor as String) + '';
+          }
         }
-      }
-      if (element instanceof Opereaciones) {
-        const valorResult = element.getValue() as Valor;
-        if (!(valorResult.tipo == TipoDato.VARIABLE)) {
-          imprimirTexto += valorResult.valor + ' ';
-        } else {
-          imprimirTexto += this.buscarValorVariable(valorResult.valor as String) + '';
+        if (element instanceof Opereaciones) {
+          const valorResult = element.getValue() as Valor;
+          if (!(valorResult.tipo == TipoDato.VARIABLE)) {
+            imprimirTexto += valorResult.valor + ' ';
+          } else {
+            imprimirTexto += this.buscarValorVariable(valorResult.valor as String) + '';
+          }
         }
-      }
-    });
-    const filtroUna = imprimirTexto.split('\'').join('');
-    const filtroDos = filtroUna.split('\"').join('');
-    console.log(filtroDos);
+        if (element instanceof ErrorParser) {
+          this.listReport.push(element);
+        }
+      });
+      const filtroUna = imprimirTexto.split('\'').join('');
+      const filtroDos = filtroUna.split('\"').join('');
+      console.log(filtroDos);
+    }
   }
 
   //buscar variable y retornar el valor de la variable de la memoria.

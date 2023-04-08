@@ -1,6 +1,6 @@
 export interface TablaView {
     nombre:String;
-    listado:String[];
+    columnas:String[];
     listadoElementos:ElemtentoTablaView[];
 }
 export interface ElemtentoTablaView{

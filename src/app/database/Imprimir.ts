@@ -1,5 +1,4 @@
 import { Token } from "src/app/database/Token" 
-import { Valor } from "./Valor";
 
 export class Imprimir extends Token{
 
