@@ -5,7 +5,7 @@
     listadoErrores = [];
     function printText(yytext) {
         /*sector de pruevas*/
-    console.log(yytext);
+    //console.log(yytext);
   }
   function addErroLexico(yytext) {
 //listadoErrores.push(new yy.ErrorParser(0, 0,yy.TipoErrorParser.INVALID,yytext));

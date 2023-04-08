@@ -16,7 +16,6 @@ import { ErrorEjecucion, ErrorParser } from "./ErrorPersonal";
 // para mantener
 import { TablaEjecucion } from "./TablaEjecucion";
 import { Variable } from "../database/Variable";
-import { MemoriaGlobalService } from "../servicio/memoria-global.service";
 
 export class Memoria {
 
@@ -29,28 +28,51 @@ export class Memoria {
 
   cargar(realizar: Token[]) {
     if (realizar != undefined && realizar.length > 0) {
-      this.listVariables = [];
+      this.listVariables = [];//variables solamente una ves
       realizar.forEach(element => {
+        //realizar la tablas
         if (element instanceof Tabla && this.insertTabla(element)) {
           this.tablas.push(new TablaEjecucion(element));
         }
+        //realizar la insercion de elementos
         if (element instanceof ElementoTabla && this.insertElementoTabla(element)) {
           this.list[0].addElemento(element);
         }
+        //Declarar variables
         if (element instanceof Declaracion) {
           this.insertarVariable(element);
         }
+        //Asignar las valor a las variables
         if (element instanceof Set) {
           this.asignacionValoresVariables(element);
         }
-        if(element instanceof Imprimir){
+        //Imprimir en consola
+        if (element instanceof Imprimir) {
           this.imprimir(element);
         }
-        if(element instanceof Consulta){
-          
-        }
+        //Listar los reportes de parsar
         if (element instanceof ErrorParser) {
           this.listReport.push(element);
+        }
+        //Consulta un select *
+        if (element instanceof Consulta) {
+
+        }
+        //Consulta un select *
+        if (element instanceof InstruccionIF) {
+          //if
+          //verifica si entro al if
+          //const irThen = 
+             //this.cargar(element.listaAcciones);
+          //else
+            if (element.cola instanceof InstruccionELSE) {
+              //this.cargar(element.cola.listaAcciones);
+            }
+            if(element.cola instanceof InstruccionELSEIF){
+                    //const irThen = 
+                    //const enviar = element.cola as InstruccionIF;
+                    //this.cargar(enviar);
+            }
         }
       });
     }
@@ -112,35 +134,38 @@ export class Memoria {
       });
     }
   }
-  imprimir(element:Imprimir){
-    var imprimirTexto:String = ' ';
+
+  //para imprimir en consola la peticion de imprimir
+  imprimir(element: Imprimir) {
+    var imprimirTexto: String = ' ';
     element.listadoValores.forEach(element => {
       if (element instanceof Valor) {
         if (!(element.tipo == TipoDato.VARIABLE)) {
-          imprimirTexto+= element.valor + ' ';
-        }else{
-          imprimirTexto+=this.buscarValorVariable(element.valor as String) + '';
-        }      
+          imprimirTexto += element.valor + ' ';
+        } else {
+          imprimirTexto += this.buscarValorVariable(element.valor as String) + '';
+        }
       }
       if (element instanceof Opereaciones) {
         const valorResult = element.getValue() as Valor;
         if (!(valorResult.tipo == TipoDato.VARIABLE)) {
-          imprimirTexto+= valorResult.valor + ' ';
-        }else{
-          imprimirTexto+=this.buscarValorVariable(valorResult.valor as String) + '';
-        } 
+          imprimirTexto += valorResult.valor + ' ';
+        } else {
+          imprimirTexto += this.buscarValorVariable(valorResult.valor as String) + '';
+        }
       }
     });
-    const filtroUna =imprimirTexto.split('\'').join('');
-    const filtroDos =filtroUna.split('\"').join('');
+    const filtroUna = imprimirTexto.split('\'').join('');
+    const filtroDos = filtroUna.split('\"').join('');
     console.log(filtroDos);
   }
 
-  buscarValorVariable(buscar:String):String | undefined{
-    var variable:String | undefined;
-    const list:Array<Variable> = this.listVariables.filter(p=> p.nombre == buscar);
-    if (list.length>0) {
-      const usar:String = list[0].getValorString();
+  //buscar variable y retornar el valor de la variable de la memoria.
+  buscarValorVariable(buscar: String): String | undefined {
+    var variable: String | undefined;
+    const list: Array<Variable> = this.listVariables.filter(p => p.nombre == buscar);
+    if (list.length > 0) {
+      const usar: String = list[0].getValorString();
       return usar + '';
     }
     return undefined;

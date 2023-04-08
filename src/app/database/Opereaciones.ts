@@ -76,11 +76,11 @@ export class Opereaciones extends Token {
           return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
         // valor && valor
         case TipoOperacion.AND:
-          valor = izquierdaDato.valor && derechaDato.valor;
+          valor = (izquierdaDato.valor === 'true') && (derechaDato.valor === 'true');
           return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
         // valor && valor
         case TipoOperacion.IGUAL:
-          valor = izquierdaDato.valor && derechaDato.valor;
+          valor = (izquierdaDato.valor === 'true') && (derechaDato.valor === 'true');
           return new Valor(this.line, this.column, this.convercionValorToTipo(valor, tipoValor), tipoValor);
         // valor > valor
         case TipoOperacion.MAYOR:
@@ -160,13 +160,12 @@ export class Opereaciones extends Token {
           return TipoDato.DECIMAL;
         }
         break;
-      
-        case TipoOperacion.NEGATIVO:
-          return derechaDato;
-          case TipoOperacion.NEGACION:
-        case TipoOperacion.AND: case TipoOperacion.IGUAL: case TipoOperacion.MAYOR: case TipoOperacion.MAYOR_IGUAL:
-          case TipoOperacion.MENOR: case TipoOperacion.MENOR_IGUAL: case TipoOperacion.NO_IGUAL: case TipoOperacion.OR:
-          return TipoDato.BOOLEAN;
+      case TipoOperacion.NEGATIVO:
+        return derechaDato;
+      case TipoOperacion.NEGACION:
+      case TipoOperacion.AND: case TipoOperacion.IGUAL: case TipoOperacion.MAYOR: case TipoOperacion.MAYOR_IGUAL:
+      case TipoOperacion.MENOR: case TipoOperacion.MENOR_IGUAL: case TipoOperacion.NO_IGUAL: case TipoOperacion.OR:
+        return TipoDato.BOOLEAN;
       default:
         break;
     }
