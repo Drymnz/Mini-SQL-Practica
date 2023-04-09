@@ -101,6 +101,7 @@ export class Memoria {
       }
     }
     else {
+      // columnas selecionadas
       for (let index = 0; index < element.listaColumna.length; index++) {
         //const element = array[index];
 
@@ -160,7 +161,22 @@ export class Memoria {
                 ustarTablaCopia.listadoElementos = nuevoListadoElmentoOFFSET;//SELECT * FROM persona LIMIT 10;
                 break;
               case TipoFiltro.WHERE:
-                
+                var condicion;
+                if (filtro.listadoAsignacion instanceof Valor) {
+                  const convertirValor: Valor = filtro.listadoAsignacion as Valor;
+                  condicion = Number(convertirValor.valor);
+                }
+                if (filtro.listadoAsignacion instanceof Opereaciones) {
+                  const convertirValor: Opereaciones = filtro.listadoAsignacion as Opereaciones;
+                  condicion = Number(convertirValor.getValue()?.valor);
+                }
+                /* ustarTablaCopia.listadoElementos = ustarTablaCopia.listadoElementos.filter(
+                  p=> p.listadoAtributos.filter(a=> 
+                    filtro.listadoAsignacion.filter(p2 => if (p2 instanceof Asignacion) {
+                      
+                    })
+                    )
+                  ); */
                 break;
               default:
                 break;
