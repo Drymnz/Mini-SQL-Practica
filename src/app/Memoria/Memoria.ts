@@ -207,13 +207,7 @@ export class Memoria {
                   const convertirValor: Opereaciones = filtro.listadoAsignacion as Opereaciones;
                   condicion = Number(convertirValor.getValue()?.valor);
                 }
-                /* ustarTablaCopia.listadoElementos = ustarTablaCopia.listadoElementos.filter(
-                  p=> p.listadoAtributos.filter(a=> 
-                    filtro.listadoAsignacion.filter(p2 => if (p2 instanceof Asignacion) {
-                      
-                    })
-                    )
-                  ); */
+
                 break;
               default:
                 break;
@@ -228,6 +222,10 @@ export class Memoria {
         this.consultas.push(Object.assign(ustarTabla));//SELECT *  FROM person ;
       }
     }
+  }
+
+  private filtarWHERE(ustarTabla: TablaEjecucion){
+    
   }
 
 
