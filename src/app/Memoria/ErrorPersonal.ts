@@ -27,17 +27,21 @@ export enum TipoErrorParser {
     MISS_TYPE_ATTRIBUTE, 
     INVALID
 }
+
 export class ErrorEjecucion extends Token{
 
   tipo: TipoErrorEjecucion;
+  lexema:String | undefined;
 
   constructor(
       line: number,
       column: number,
+      lexema:String | undefined,
       tipo: TipoErrorEjecucion
     ) {
       super(line, column);
       this.tipo = tipo ;
+      this.lexema = lexema;
     }
 
 }

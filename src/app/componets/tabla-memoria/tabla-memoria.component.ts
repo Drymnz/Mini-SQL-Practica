@@ -6,8 +6,8 @@ import { ElemtentoTablaView, TablaView } from 'src/app/interface/tabla-view';
 
 
 @Component({
-  standalone:true,
-  imports:[CommonModule],
+  standalone: true,
+  imports: [CommonModule],
   selector: 'app-tabla-memoria',
   templateUrl: './tabla-memoria.component.html',
   styleUrls: ['./tabla-memoria.component.css']
@@ -15,68 +15,89 @@ import { ElemtentoTablaView, TablaView } from 'src/app/interface/tabla-view';
 
 export class TablaMemoriaComponent {
 
-  mostrarTablaView:TablaView[] = [];
+  mostrarTablaView: TablaView[] = [];
   private tablas: Array<TablaEjecucion> = [];
 
-  constructor(){
+  constructor() {
 
   }
 
-  cargarTablas(tablas: Array<TablaEjecucion>){
-    this.tablas = tablas;
-    this.trasformarcion();
+  cargarTablas(tablas: Array<TablaEjecucion>) {
+    if (tablas!=undefined && tablas.length > 0) {
+      this.tablas = tablas;
+      this.trasformarcion();
+    }
   }
 
   private trasformarcion(): void {
     for (let i = 0; this.tablas.length > i; i++) {
-      const nombreInser:String = this.tablas[i].tablas.name;
-      const listadoAtributos:String[] = this.tablas[i].tablas.getListadoNombreAtriguto();
-      const listadoElementos:ElemtentoTablaView[] = [];
+      const nombreInser: String = this.tablas[i].tablas.name;
+      const listadoAtributos: String[] = this.tablas[i].tablas.getListadoNombreAtriguto();
+      const listadoElementos: ElemtentoTablaView[] = [];
       for (let index = 0; index < this.tablas[i].listadoElementos.length; index++) {
-        const elementoInsert:ElemtentoTablaView = {listadoDatos:this.tablas[i].listadoElementos[index].getListadoValores()};
+        const elementoInsert: ElemtentoTablaView = { listadoDatos: this.tablas[i].listadoElementos[index].getListadoValores() };
         listadoElementos.push(elementoInsert);
       }
-      const crearTablaVied:TablaView = {nombre:nombreInser,columnas:listadoAtributos,listadoElementos:listadoElementos};
+      const crearTablaVied: TablaView = { nombre: nombreInser, columnas: listadoAtributos, listadoElementos: listadoElementos };
       this.mostrarTablaView.push(crearTablaVied);
     }
   }
 
-  cargarReportesLS(listReport: Array<ErrorParser> ){
-    const nombreTabla:String = "Reportes lexicos y sintacticos";
-    const listadoAtributos:String[] = [
-      "Linea" , 
-      "Columna" , 
-      "Lexema"  , 
+  cargarReportesLS(listReport: Array<ErrorParser>) {
+    const nombreTabla: String = "Reportes lexicos y sintacticos";
+    const listadoAtributos: String[] = [
+      "Linea",
+      "Columna",
+      "Lexema",
       "Tipo"
     ];
-    const listadoElementos:ElemtentoTablaView[] = [];
+    const listadoElementos: ElemtentoTablaView[] = [];
     for (let index = 0; index < listReport.length; index++) {
-      const tipo:String = this.stringTipoErrorParser(listReport[index].tipo);
-        const elementoInsert:ElemtentoTablaView = {
-          listadoDatos:[
-            String(listReport[index].line),
-            String(listReport[index].column),
-            String(listReport[index].lexema),
-            tipo
-          ]
-        };
-        listadoElementos.push(elementoInsert);
+      const tipo: String = this.stringTipoErrorParser(listReport[index].tipo);
+      const elementoInsert: ElemtentoTablaView = {
+        listadoDatos: [
+          String(listReport[index].line),
+          String(listReport[index].column),
+          String(listReport[index].lexema),
+          tipo
+        ]
+      };
+      listadoElementos.push(elementoInsert);
     }
-    const crearTablaVied:TablaView = {
-      nombre:nombreTabla,
-      columnas:listadoAtributos,
-      listadoElementos:listadoElementos
+    const crearTablaVied: TablaView = {
+      nombre: nombreTabla,
+      columnas: listadoAtributos,
+      listadoElementos: listadoElementos
     };
     this.mostrarTablaView.push(crearTablaVied);
   }
 
-  stringTipoErrorParser(tipo:TipoErrorParser):String{
+  private stringTipoErrorParser(tipo: TipoErrorParser): String {
     switch (tipo) {
       case TipoErrorParser.PUNTO_COMA:
-        return "";
+        return this.faltanteStringGramatica("PUNTO_COMA");
+      case TipoErrorParser.FROM:
+        return this.faltanteStringGramatica("FROM");
+      case TipoErrorParser.MISSING_TABLE_ATTRIBUTE:
+        return this.faltanteStringGramatica("Atributos en la tabla");
+      case TipoErrorParser.MISS_COL:
+        return this.faltanteStringGramatica("Indicar las columnas");
+      case TipoErrorParser.MISS_DATA:
+        return this.faltanteStringGramatica("Dato");
+      case TipoErrorParser.MISS_TYPE_ATTRIBUTE:
+        return this.faltanteStringGramatica("Tipo de atributo");
+      case TipoErrorParser.THEN:
+        return this.faltanteStringGramatica("THEN");
+      case TipoErrorParser.INVALID:
+        return "No pertenece al alfabeto";
+
       default:
         return "";
     }
+  }
+
+  private faltanteStringGramatica(faltante: String): String {
+    return "Falto un " + faltante + " en la gramatica";
   }
 
 }

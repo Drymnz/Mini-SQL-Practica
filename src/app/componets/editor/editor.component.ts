@@ -54,9 +54,9 @@ export class EditorComponent{
       this.memoria.cargar(resultadoAnalize);
       console.log(resultadoAnalize)
       console.log(this.memoria)
-      this.mostrarMemoria = this.memoria.tablas.length > 0; 
-      this.mostrarReportesErrorLexicoSintacticos = this.memoria.listReport.length > 0; 
-      this.mostrarReportesSemanticos = this.memoria.listSemantico.length > 0; 
+      this.mostrarMemoria = (this.memoria.tablas!=undefined) && (this.memoria.tablas.length > 0); 
+      this.mostrarReportesErrorLexicoSintacticos = (this.memoria.tablas!=undefined) &&(this.memoria.listReport.length > 0); 
+      this.mostrarReportesSemanticos = (this.memoria.tablas!=undefined) &&(this.memoria.listSemantico.length > 0); 
     } catch (error) {
       console.log(error);
     }

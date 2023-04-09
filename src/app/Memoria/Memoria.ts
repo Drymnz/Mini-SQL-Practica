@@ -1,6 +1,6 @@
 // para analizar
 import { Token } from "src/app/database/Token"
-import { Tabla , TipoDato } from "src/app/database/Tabla"
+import { Tabla, TipoDato } from "src/app/database/Tabla"
 import { Valor } from "../database/Valor";
 import { Opereaciones, TipoOperacion } from "../database/Opereaciones";
 import { ElementoTabla } from "../database/ElementoTabla";
@@ -10,7 +10,7 @@ import { Set } from "../database/Set";
 import { Consulta } from "../database/Consulta";
 import { Filtro, TipoFiltro } from "../database/Filtro";
 import { InstruccionIF, InstruccionELSE, InstruccionELSEIF } from "../database/InstruccionIF";
-import { ErrorEjecucion, ErrorParser } from "./ErrorPersonal";
+import { ErrorEjecucion, ErrorParser, TipoErrorEjecucion } from "./ErrorPersonal";
 
 // para mantener
 import { TablaEjecucion } from "./TablaEjecucion";
@@ -22,15 +22,15 @@ export class Memoria {
   private list: Array<TablaEjecucion> = [];
   private listVariables: Array<Variable> = [];
   consultas: Array<TablaEjecucion> = new Array;
-  listReport: Array<ErrorParser> = new Array;
-  listSemantico: Array<ErrorEjecucion> = new Array;
+  listReport: Array<ErrorParser> = new Array; // Reportes lexicos y sintacticos 
+  listSemantico: Array<ErrorEjecucion> = new Array; // Reportes semánticos
 
   cargar(realizar: Token[]) {
     if (realizar != undefined && realizar.length > 0) {
       this.listVariables = [];//variables solamente una ves
-      this.consultas = [];//variables solamente una ves
-      this.listReport = [];//variables solamente una ves
-      this.listSemantico = [];//variables solamente una ves
+      this.consultas = new Array;//variables solamente una ves
+      this.listReport = new Array;//variables solamente una ves
+      this.listSemantico = new Array;//variables solamente una ves
       realizar.forEach(element => {
         //realizar la tablas
         if (element instanceof Tabla && this.insertTabla(element)) {
@@ -56,6 +56,11 @@ export class Memoria {
         if (element instanceof Consulta) {
 
         }
+        //Listar los reportes de parsar
+        if (element instanceof ErrorParser) {
+          this.listReport.push(element);
+
+        }
         //Consulta un select *
         if (element instanceof InstruccionIF) {
           //if
@@ -71,23 +76,28 @@ export class Memoria {
             //const enviar = element.cola as InstruccionIF;
             //this.cargar(enviar);
           }
-          //Listar los reportes de parsar
-          if (element instanceof ErrorParser) {
-            this.listReport.push(element);
-          }
         }
       });
     }
   }
 
   insertTabla(element: Tabla): Boolean {
-    if (this.tablas.length > 0 && this.limpiarTabla(element)) {
-      return !(this.tablas.filter(p => p.tablas.name == element.name).length > 0);
+    if (this.limpiarTabla(element)) {
+      if (this.tablas.length > 0) {
+        if ((this.tablas.filter(p => p.tablas.name == element.name).length > 0)) {
+          this.listSemantico.push(new ErrorEjecucion(element.line,element.column,element.name,TipoErrorEjecucion.INVALID));
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
     }
-    return true;
+    return false;
   }
 
-  limpiarTabla(element: Tabla):boolean{
+  limpiarTabla(element: Tabla): boolean {
     if (element.listadoAtributo instanceof ErrorParser) {
       this.listReport.push(element.listadoAtributo);
       return false;
@@ -109,10 +119,10 @@ export class Memoria {
       );
       return (this.list.length == 1);
     }
-    return true;
+    return false;
   }
 
-  limpiarElementoTabla(element: ElementoTabla):boolean{
+  limpiarElementoTabla(element: ElementoTabla): boolean {
     if (element.listadoAtributos instanceof ErrorParser) {
       this.listReport.push(element.listadoAtributos);
       return false;
@@ -140,7 +150,7 @@ export class Memoria {
     }
   }
 
-  limpiarDeclaracion(element: Declaracion):boolean{
+  limpiarDeclaracion(element: Declaracion): boolean {
     if (element.valor instanceof ErrorParser) {
       this.listReport.push(element.valor);
       return false;
@@ -160,7 +170,7 @@ export class Memoria {
     }
   }
 
-  limpiarSet(element: Set):boolean{
+  limpiarSet(element: Set): boolean {
     if (element.listadoAsignacion instanceof ErrorParser) {
       this.listReport.push(element.listadoAsignacion);
       return false;
@@ -173,7 +183,7 @@ export class Memoria {
     var imprimirTexto: String = ' ';
     if (element.listadoValores instanceof ErrorParser) {
       this.listReport.push(element.listadoValores);
-    }else {
+    } else {
       element.listadoValores.forEach(element => {
         if (element instanceof Valor) {
           if (!(element.tipo == TipoDato.VARIABLE)) {

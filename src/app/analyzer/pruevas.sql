@@ -3,7 +3,17 @@
 DECLARE @name AS TEXT = "hello";
 PRINT ('Looking for id', 7, 'or', 10, @name);
 
-PRINT ('Looking for id', 7, 'or', 10, '.');
+PRINT ('Looking for id', , 'or', 10, '.');
+
+--errores MISS_COL
+SELECT  FROM person WHERE id = 1;
+--errores MISS_DATA
+SELECT * FROM person WHERE ;
+--errores MISS_TYPE_ATTRIBUTE
+DECLARE @name AS  = "hello";
+--errores INVALID este funciona medias
+~~~~~~
+
 
 
 person(id INT,first_name STRING, gender STRING,age INT);
@@ -57,6 +67,7 @@ ELSE
 SET @dec1 = 1;
 SET @id = 1;
 END IF;
+
 IF @name = "Cameron" AND (@dec = 12.5 OR @dec + 1 >= 100) THEN
 SET @dec1 = @id;
 SET @id = INPUT("Ingrese el id a buscar: ");
@@ -64,6 +75,7 @@ ELSEIF @name = 'Jose' THEN
 SET @id = 100;
 PRINT ('Looking for id', @id);
 END IF;
+
 IF @id = 7 OR @id = 10 THEN
 IF @email = 'email@gmail.com' THEN
 SET @email = 'my-email@gmail.com';

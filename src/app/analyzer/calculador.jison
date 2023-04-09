@@ -81,10 +81,12 @@ ID          [a-zA-Z]([a-zA-Z0-9])+
 [a-zA-Z][a-zA-Z0-9]+([_]+[a-zA-Z0-9]+)+ {printText(yytext+'  PROPERTY_NAME');return 'PROPERTY_NAME'}
 {ID}                                    {printText(yytext+'  TABLE_NAME');return 'TABLE_NAME'}
 <<EOF>>                                 {printText(yytext+'  EOF');return 'EOF';}
+("~"|"`"|"&"|"!"|"@"|"#"|"$"|"%"|"_"|"\\"|"<"|">"|"\?"|"."|";"|"^")+ {printText(yytext+'  INVALID'); return 'INVALID';};
 .                                       {printText(yytext+'  INVALID');
 addErroLexico(yytext);
 return 'INVALID';
 }
+
 
 /lex
 
@@ -131,7 +133,7 @@ realizar
     ;
 /*MANEJO DE ERRORES SINTACTICO*/
 e_p_c : ';' { $$ = $1; } | error 
-{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.PUNTO_COMA,' '); }; //error te falta ;
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.PUNTO_COMA,' ; '); }; //error te falta ;
 e_f_t : FROM  | error
 //{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.FROM,' '); }
 ;   //te falto el from
