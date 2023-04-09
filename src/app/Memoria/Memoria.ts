@@ -1,6 +1,6 @@
 // para analizar
 import { Token } from "src/app/database/Token"
-import { Tabla, TipoDato } from "src/app/database/Tabla"
+import { Atributo, Tabla, TipoDato } from "src/app/database/Tabla"
 import { Valor } from "../database/Valor";
 import { Opereaciones, TipoOperacion } from "../database/Opereaciones";
 import { ElementoTabla } from "../database/ElementoTabla";
@@ -58,7 +58,7 @@ export class Memoria {
         }
         //Consulta un select *
         if (element instanceof Consulta) {
-          this.realizarConsulta(element)
+          this.realizarConsulta(element);
         }
         //Listar los reportes de parsar
         if (element instanceof ErrorParser) {
@@ -96,36 +96,73 @@ export class Memoria {
         if (ustarTabla == undefined) {
           this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line, element.column, 'undefind', TipoErrorEjecucion.NO_HAY_TABLA_CONSULTA));
         } else {
-          this.aplicarFiltro(ustarTabla, element)
+          this.aplicarFiltro(Object.assign(ustarTabla), element)
         }
       }
     }
     else {
-      // columnas selecionadas
-      for (let index = 0; index < element.listaColumna.length; index++) {
-        //const element = array[index];
-
+      if (element.nombreTabla == undefined) {
+        this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line, element.column, 'undefind', TipoErrorEjecucion.NO_SELECCION_TABLA));
+      } else {
+        const ustarTabla: TablaEjecucion | undefined = this.buscarTablaNombre(String(element.nombreTabla));
+        if (ustarTabla == undefined) {
+          this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line, element.column, 'undefind', TipoErrorEjecucion.NO_HAY_TABLA_CONSULTA));
+        } else {
+          // columnas selecionadas
+          const  listadoReturnar:Atributo[] = this.convertirListadoValorListadoAtributos(element.listaColumna);
+          ustarTabla.listadoElementos = this.filtrarElemento(listadoReturnar,ustarTabla.listadoElementos);
+          ustarTabla.tablas.listadoAtributo = listadoReturnar;
+          this.consultas.push(Object.assign(ustarTabla));
+        }
       }
     }
   }
 
+  private filtrarElemento(listado:Atributo[],listadoElementos:ElementoTabla[]):ElementoTabla[]{
+    const listadoRetornar:ElementoTabla[] = [];
+    for (let j = 0; j < listadoElementos.length; j++) {
+      const element:ElementoTabla = listadoElementos[j];
+      var nuevoElemento:ElementoTabla = new ElementoTabla(element.line,element.column,[]);
+      var insertar:Boolean = true;
+      for (let i = 0; i < listado.length; i++) {
+        const atributo:Atributo = listado[i];
+        for (let a = 0; a < element.listadoAtributos.length; a++) {
+          const asingacion:Asignacion = element.listadoAtributos[a];
+          if (atributo.name == asingacion.nombre) {
+            nuevoElemento.listadoAtributos.push(asingacion);
+          }
+        }
+      }
+      listadoRetornar.push(nuevoElemento);
+    }
+    return listadoRetornar;
+  }
+
+  private convertirListadoValorListadoAtributos(listValor:Valor[]):Atributo[]{
+    const  listadoReturnar:Atributo[] = [];
+    for (let index = 0; index < listValor.length; index++) {
+      const element = listValor[index];
+      listadoReturnar.push(new Atributo(element.line,element.column,element.getValorString(),TipoDato.VARIABLE));
+    }
+
+    return listadoReturnar;
+  }
+
   private aplicarFiltro(ustarTabla: TablaEjecucion, element: Consulta) {
-    console.log(element)
     if (element.listFiltros == undefined) {
-      this.consultas.push(ustarTabla);
+      this.consultas.push(Object.assign(Object.assign(ustarTabla)));
     } else {
       if (element.listFiltros.length > 0) {
         if (element.listFiltros[0].listadoAsignacion == undefined || element.listFiltros[0].listadoAsignacion instanceof ErrorParser) {
-          this.consultas.push(ustarTabla);//SELECT *  FROM person WHERE ;
+          this.consultas.push(Object.assign(Object.assign(ustarTabla)));//SELECT *  FROM person WHERE ;
         } else {
-          const ustarTablaCopia: TablaEjecucion = ustarTabla;
+          const ustarTablaCopia = Object.assign(ustarTabla);
           for (let i = 0; i < element.listFiltros.length; i++) {
             var numeroLimit = 0;
             const filtro: Filtro = element.listFiltros[i];
             switch (filtro.tipo) {
               case TipoFiltro.LIMIT:
                 const nuevoListadoElmento: ElementoTabla[] = [];
-                console.log(filtro.listadoAsignacion)
                 if (filtro.listadoAsignacion instanceof Valor) {
                   const convertirValor: Valor = filtro.listadoAsignacion as Valor;
                   numeroLimit = Number(convertirValor.valor);
@@ -145,7 +182,6 @@ export class Memoria {
                 break;
               case TipoFiltro.OFFSET:
                 const nuevoListadoElmentoOFFSET: ElementoTabla[] = [];
-                console.log(filtro.listadoAsignacion)
                 if (filtro.listadoAsignacion instanceof Valor) {
                   const convertirValor: Valor = filtro.listadoAsignacion as Valor;
                   numeroLimit = Number(convertirValor.valor);
@@ -156,8 +192,9 @@ export class Memoria {
                 }
                 for (let j = numeroLimit; (j < ustarTablaCopia.listadoElementos.length) && (j > -1); j++) {
                   const element: ElementoTabla = ustarTablaCopia.listadoElementos[j];
-                  nuevoListadoElmentoOFFSET.push(element);
+                  nuevoListadoElmentoOFFSET.push( Object.assign(element));
                 }
+                ustarTablaCopia.listadoElementos = Object.assign(ustarTablaCopia.listadoElementos)
                 ustarTablaCopia.listadoElementos = nuevoListadoElmentoOFFSET;//SELECT * FROM persona LIMIT 10;
                 break;
               case TipoFiltro.WHERE:
@@ -188,7 +225,7 @@ export class Memoria {
           this.consultas.push(ustarTablaCopia);//despues de utilizar los filtros;
         }
       } else {
-        this.consultas.push(ustarTabla);//SELECT *  FROM person ;
+        this.consultas.push(Object.assign(ustarTabla));//SELECT *  FROM person ;
       }
     }
   }

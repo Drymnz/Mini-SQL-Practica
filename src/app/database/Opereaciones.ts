@@ -175,18 +175,18 @@ export class Opereaciones extends Token {
 }
 
 export enum TipoOperacion {
-  NEGACION,
-  AND,
-  OR,
-  NO_IGUAL,
-  MAYOR_IGUAL,
-  MAYOR,
-  MENOR_IGUAL,
-  MENOR,
-  IGUAL,
-  NEGATIVO,
-  DIVISION,
-  MULTIPLICACION,
-  RESTA,
-  SUMA,
+  NEGACION,//0
+  AND,//1
+  OR,//2
+  NO_IGUAL,//3
+  MAYOR_IGUAL,//4
+  MAYOR,//5
+  MENOR_IGUAL,//6
+  MENOR,//7
+  IGUAL,//8
+  NEGATIVO,//9
+  DIVISION,//10
+  MULTIPLICACION,//11
+  RESTA,//12
+  SUMA,//13
 }

@@ -16,7 +16,10 @@ id=8,first_name="Saundra",gender="Male",age=23;
 id=9,first_name="Tiler",gender="Male",age=20;
 id=10,first_name="Deane",gender="Male",age=30;
 
+SELECT first_name, id, age FROM person ;
+
 SELECT * FROM person LIMIT 10 OFFSET 15 + 5;
+SELECT * FROM person WHERE id = 1;
 
 
 # definición de la table actor
