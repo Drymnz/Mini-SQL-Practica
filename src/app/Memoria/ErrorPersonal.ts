@@ -46,5 +46,5 @@ export class ErrorEjecucion extends Token{
 
 }
 export enum TipoErrorEjecucion {
-  INVALID
+  TABLA_REPETIDA
 }

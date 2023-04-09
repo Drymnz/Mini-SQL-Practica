@@ -85,7 +85,7 @@ export class Memoria {
     if (this.limpiarTabla(element)) {
       if (this.tablas.length > 0) {
         if ((this.tablas.filter(p => p.tablas.name == element.name).length > 0)) {
-          this.listSemantico.push(new ErrorEjecucion(element.line,element.column,element.name,TipoErrorEjecucion.INVALID));
+          this.listSemantico.push(new ErrorEjecucion(element.line,element.column,element.name,TipoErrorEjecucion.TABLA_REPETIDA));
           return false;
         } else {
           return true;

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ErrorParser, TipoErrorParser } from 'src/app/Memoria/ErrorPersonal';
+import { ErrorEjecucion, ErrorParser, TipoErrorEjecucion, TipoErrorParser } from 'src/app/Memoria/ErrorPersonal';
 import { TablaEjecucion } from 'src/app/Memoria/TablaEjecucion';
 import { ElemtentoTablaView, TablaView } from 'src/app/interface/tabla-view';
 
@@ -23,7 +23,7 @@ export class TablaMemoriaComponent {
   }
 
   cargarTablas(tablas: Array<TablaEjecucion>) {
-    if (tablas!=undefined && tablas.length > 0) {
+    if (tablas != undefined && tablas.length > 0) {
       this.tablas = tablas;
       this.trasformarcion();
     }
@@ -44,32 +44,34 @@ export class TablaMemoriaComponent {
   }
 
   cargarReportesLS(listReport: Array<ErrorParser>) {
-    const nombreTabla: String = "Reportes lexicos y sintacticos";
-    const listadoAtributos: String[] = [
-      "Linea",
-      "Columna",
-      "Lexema",
-      "Tipo"
-    ];
-    const listadoElementos: ElemtentoTablaView[] = [];
-    for (let index = 0; index < listReport.length; index++) {
-      const tipo: String = this.stringTipoErrorParser(listReport[index].tipo);
-      const elementoInsert: ElemtentoTablaView = {
-        listadoDatos: [
-          String(listReport[index].line),
-          String(listReport[index].column),
-          String(listReport[index].lexema),
-          tipo
-        ]
+    if (listReport != undefined && listReport.length > 0) {
+      const nombreTabla: String = "Reportes lexicos y sintacticos";
+      const listadoAtributos: String[] = [
+        "Linea",
+        "Columna",
+        "Lexema",
+        "Tipo"
+      ];
+      const listadoElementos: ElemtentoTablaView[] = [];
+      for (let index = 0; index < listReport.length; index++) {
+        const tipo: String = this.stringTipoErrorParser(listReport[index].tipo);
+        const elementoInsert: ElemtentoTablaView = {
+          listadoDatos: [
+            String(listReport[index].line),
+            String(listReport[index].column),
+            String(listReport[index].lexema),
+            tipo
+          ]
+        };
+        listadoElementos.push(elementoInsert);
+      }
+      const crearTablaVied: TablaView = {
+        nombre: nombreTabla,
+        columnas: listadoAtributos,
+        listadoElementos: listadoElementos
       };
-      listadoElementos.push(elementoInsert);
+      this.mostrarTablaView.push(crearTablaVied);
     }
-    const crearTablaVied: TablaView = {
-      nombre: nombreTabla,
-      columnas: listadoAtributos,
-      listadoElementos: listadoElementos
-    };
-    this.mostrarTablaView.push(crearTablaVied);
   }
 
   private stringTipoErrorParser(tipo: TipoErrorParser): String {
@@ -100,4 +102,43 @@ export class TablaMemoriaComponent {
     return "Falto un " + faltante + " en la gramatica";
   }
 
+  cargarReportesSemantico(listSemantico: Array<ErrorEjecucion>) {
+    if (listSemantico != undefined && listSemantico.length > 0) {
+      const nombreTabla: String = "Reportes lexicos y sintacticos";
+      const listadoAtributos: String[] = [
+        "Linea",
+        "Columna",
+        "Lexema",
+        "Tipo"
+      ];
+      const listadoElementos: ElemtentoTablaView[] = [];
+      for (let index = 0; index < listSemantico.length; index++) {
+        const tipo: String = this.stringTipoErrorEjecucion(listSemantico[index].tipo);
+        const elementoInsert: ElemtentoTablaView = {
+          listadoDatos: [
+            String(listSemantico[index].line),
+            String(listSemantico[index].column),
+            String(listSemantico[index].lexema),
+            tipo
+          ]
+        };
+        listadoElementos.push(elementoInsert);
+      }
+      const crearTablaVied: TablaView = {
+        nombre: nombreTabla,
+        columnas: listadoAtributos,
+        listadoElementos: listadoElementos
+      };
+      this.mostrarTablaView.push(crearTablaVied);
+    }
+  }
+
+  stringTipoErrorEjecucion(tipo: TipoErrorEjecucion): String {
+    switch (tipo) {
+      case TipoErrorEjecucion.TABLA_REPETIDA:
+        return "Tabla repetida";
+      default:
+        return "";
+    }
+  }
 }

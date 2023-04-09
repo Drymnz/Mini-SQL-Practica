@@ -71,7 +71,7 @@ export class EditorComponent{
   }
 
   irReportesDB(){
-    this.usarIr().instance.cargarTablas(this.memoria.tablas);
+    this.usarIr().instance.cargarReportesSemantico(this.memoria.listSemantico);
   }
 
   private usarIr():ComponentRef<TablaMemoriaComponent>{
