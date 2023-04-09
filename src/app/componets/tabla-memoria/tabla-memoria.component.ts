@@ -137,6 +137,12 @@ export class TablaMemoriaComponent {
     switch (tipo) {
       case TipoErrorEjecucion.TABLA_REPETIDA:
         return "Tabla repetida";
+      case TipoErrorEjecucion.NO_EXITE_TABLA_DONDE_COLOCAR:
+        return "No cumple con una registro tabla";
+      case TipoErrorEjecucion.NO_HAY_TABLAS:
+        return "No hay tablas para colocar";
+      case TipoErrorEjecucion.ELEMENTO_REPETIDO:
+        return " Ya existe este elemento";
       default:
         return "";
     }

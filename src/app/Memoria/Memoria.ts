@@ -15,6 +15,7 @@ import { ErrorEjecucion, ErrorParser, TipoErrorEjecucion } from "./ErrorPersonal
 // para mantener
 import { TablaEjecucion } from "./TablaEjecucion";
 import { Variable } from "../database/Variable";
+import { Asignacion } from "../database/Asignacion";
 
 export class Memoria {
 
@@ -85,7 +86,7 @@ export class Memoria {
     if (this.limpiarTabla(element)) {
       if (this.tablas.length > 0) {
         if ((this.tablas.filter(p => p.tablas.name == element.name).length > 0)) {
-          this.listSemantico.push(new ErrorEjecucion(element.line,element.column,element.name,TipoErrorEjecucion.TABLA_REPETIDA));
+          this.listSemantico.push(new ErrorEjecucion(element.line, element.column, element.name, TipoErrorEjecucion.TABLA_REPETIDA));
           return false;
         } else {
           return true;
@@ -111,15 +112,42 @@ export class Memoria {
         p1 => p1.tablas.listadoAtributo.filter(//Tabla memoria
           p2 =>//Listado Atributo de tabla memoria
             element.listadoAtributos.filter(
-              p3 => p3.nombre == p2.name // este atributo tiene el mismo nombre
+              p3 => (p3.nombre == p2.name)  // este atributo tiene el mismo nombre
             ).length == 1// tiene la misma cantidad de atributos 
         ).length == p1.tablas.listadoAtributo.length
         //Tabla
-        //TablaEjecucion
       );
-      return (this.list.length == 1);
+      if ((this.list.length == 1)) {//TablaEjecucion
+        //asignar esta tabla para recorer
+        const usarTabla: TablaEjecucion = this.list[0];
+        //recorer los elementos de tabla
+        const listadoElementosrecorer: ElementoTabla[] = usarTabla.listadoElementos;
+        if (listadoElementosrecorer.length > 0) {
+          //vamos a filtrar los elementos repetidos
+          const listadoElementosrecorerRepetidos: ElementoTabla[] = listadoElementosrecorer.filter(
+            p => p.listadoAtributos.filter(
+              l =>
+                element.listadoAtributos.filter(
+                  p3 => (p3.getValor().valor == l.getValor().valor)  // este atributo tiene el mismo nombre
+                ).length == 1
+            ).length == p.listadoAtributos.length
+          );
+          if (listadoElementosrecorerRepetidos.length == 0) {
+            return true;
+          } else {
+            this.listSemantico.push(new ErrorEjecucion(element.line, element.column, "elemento tabla", TipoErrorEjecucion.ELEMENTO_REPETIDO));
+            return false;
+          }
+        }
+        return true;
+      } else {
+        this.listSemantico.push(new ErrorEjecucion(element.line, element.column, "elemento tabla", TipoErrorEjecucion.NO_EXITE_TABLA_DONDE_COLOCAR));
+        return false;
+      }
+    } else {
+      this.listSemantico.push(new ErrorEjecucion(element.line, element.column, "vacio", TipoErrorEjecucion.NO_HAY_TABLAS));
+      return false;
     }
-    return false;
   }
 
   limpiarElementoTabla(element: ElementoTabla): boolean {
