@@ -129,6 +129,7 @@ realizar
     | select e_p_c { $$ = $1; }
     /*if*/
     | if END IF e_p_c  { $$ = $1; }
+    /*error*/
     | INVALID { $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.INVALID,$1); }
     ;
 /*MANEJO DE ERRORES SINTACTICO*/
@@ -141,13 +142,13 @@ e_t_f : THEN  |  error
 //{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.THEN,' '); }
 ;  //te falta if indicar then
 e_d   : dato { $$ = $1; } |  error
-{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_DATA,' '); };  //te falto indicar la asignacion
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_DATA,'falta datos'); };  //te falto indicar la asignacion
 e_c_s : col_todo { $$ = $1; }|  error
-{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_COL,' '); };  //te falto indicar que columna
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_COL,'falta indicar colmuna de consulta'); };  //te falto indicar que columna
 e_a_c_t: atributo_tabla { $$ = $1; } |  error
-{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISSING_TABLE_ATTRIBUTE,' '); }; //te falta atributos a la tabla
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISSING_TABLE_ATTRIBUTE,'falta indicar colmuna de atributos'); }; //te falta atributos a la tabla
 e_f_t_t: tipo_atributo { $$ = $1; } |  error
-{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_TYPE_ATTRIBUTE,' '); };    //falta tipo en atributo de tabla
+{ $$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_TYPE_ATTRIBUTE,'falta indicar colmuna de atributos'); };    //falta tipo en atributo de tabla
 /*SELECT*/
 
 select : SELECT e_c_s e_f_t nombre_atributo s_f 

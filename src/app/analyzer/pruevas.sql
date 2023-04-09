@@ -4,18 +4,6 @@ DECLARE @name AS TEXT = "hello";
 PRINT ('Looking for id', 7, 'or', 10, @name);
 
 PRINT ('Looking for id', , 'or', 10, '.');
-
---errores MISS_COL
-SELECT  FROM person WHERE id = 1;
---errores MISS_DATA
-SELECT * FROM person WHERE ;
---errores MISS_TYPE_ATTRIBUTE
-DECLARE @name AS  = "hello";
---errores INVALID este funciona medias
-~~~~~~
-
-
-
 person(id INT,first_name STRING, gender STRING,age INT);
 id=1,first_name="Ivan",gender="Male",age=39+323/434*2;
 id=2,first_name="Roderich",gender="Polygender",age=32;
@@ -27,6 +15,10 @@ id=7,first_name="Ema",gender="Female",age=22;
 id=8,first_name="Saundra",gender="Male",age=23;
 id=9,first_name="Tiler",gender="Male",age=20;
 id=10,first_name="Deane",gender="Male",age=30;
+
+SELECT * FROM person LIMIT 10 OFFSET 15 + 5;
+
+
 # definición de la table actor
 actor(name STRING, active BOOLEAN, location STRING);
 name="Thom", active= false && true, location="Baraçais";

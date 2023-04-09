@@ -111,19 +111,19 @@ case 12:
  this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.INVALID,$$[$0]); 
 break;
 case 14:
- this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.PUNTO_COMA,' '); 
+ this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.PUNTO_COMA,' ; '); 
 break;
 case 20:
- this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_DATA,' '); 
+ this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_DATA,'falta datos'); 
 break;
 case 22:
- this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_COL,' '); 
+ this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_COL,'falta indicar colmuna de consulta'); 
 break;
 case 24:
- this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISSING_TABLE_ATTRIBUTE,' '); 
+ this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISSING_TABLE_ATTRIBUTE,'falta indicar colmuna de atributos'); 
 break;
 case 26:
- this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_TYPE_ATTRIBUTE,' '); 
+ this.$ = new yy.ErrorParser(this._$.first_line, this._$.first_column,yy.TipoErrorParser.MISS_TYPE_ATTRIBUTE,'falta indicar colmuna de atributos'); 
 break;
 case 27:
  this.$ = new yy.Consulta(this._$.first_line, this._$.first_column,$$[$0-3],$$[$0-1],$$[$0]); 

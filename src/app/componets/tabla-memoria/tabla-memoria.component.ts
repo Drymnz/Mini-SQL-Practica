@@ -104,7 +104,7 @@ export class TablaMemoriaComponent {
 
   cargarReportesSemantico(listSemantico: Array<ErrorEjecucion>) {
     if (listSemantico != undefined && listSemantico.length > 0) {
-      const nombreTabla: String = "Reportes lexicos y sintacticos";
+      const nombreTabla: String = "Reportes Semantico";
       const listadoAtributos: String[] = [
         "Linea",
         "Columna",
@@ -143,6 +143,10 @@ export class TablaMemoriaComponent {
         return "No hay tablas para colocar";
       case TipoErrorEjecucion.ELEMENTO_REPETIDO:
         return " Ya existe este elemento";
+        case TipoErrorEjecucion.NO_SELECCION_TABLA:
+          return " No se a seleccionado nombre de tabla";
+          case TipoErrorEjecucion.NO_HAY_TABLA_CONSULTA:
+            return " No hay ninguna tabla con ese nombre";
       default:
         return "";
     }

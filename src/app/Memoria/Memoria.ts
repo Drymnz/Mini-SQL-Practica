@@ -12,6 +12,7 @@ import { Filtro, TipoFiltro } from "../database/Filtro";
 import { InstruccionIF, InstruccionELSE, InstruccionELSEIF } from "../database/InstruccionIF";
 import { ErrorEjecucion, ErrorParser, TipoErrorEjecucion } from "./ErrorPersonal";
 
+
 // para mantener
 import { TablaEjecucion } from "./TablaEjecucion";
 import { Variable } from "../database/Variable";
@@ -19,12 +20,13 @@ import { Asignacion } from "../database/Asignacion";
 
 export class Memoria {
 
-  tablas: Array<TablaEjecucion> = new Array;
-  private list: Array<TablaEjecucion> = [];
-  private listVariables: Array<Variable> = [];
-  consultas: Array<TablaEjecucion> = new Array;
-  listReport: Array<ErrorParser> = new Array; // Reportes lexicos y sintacticos 
-  listSemantico: Array<ErrorEjecucion> = new Array; // Reportes semánticos
+  tablas: Array<TablaEjecucion> = new Array;// tabla que aguarda los data base
+  private list: Array<TablaEjecucion> = [];// listado que me sirvio para agregar //post se puede simplificar
+  private listVariables: Array<Variable> = [];// lista de variables de ejecucion
+  consultas: Array<TablaEjecucion> = new Array;// lista de consultas select 
+  listReport: Array<ErrorParser> = new Array; // Reportes lexicos y sintacticos // errores en el analizes 
+  listSemantico: Array<ErrorEjecucion> = new Array; // Reportes semánticos // son de ejecucion o ultima etapa de intreprete
+  listSemanticoMiniSQL: Array<ErrorEjecucion> = new Array; // Reportes semánticos // son de ejecucion o ultima etapa de intreprete
 
   cargar(realizar: Token[]) {
     if (realizar != undefined && realizar.length > 0) {
@@ -32,6 +34,7 @@ export class Memoria {
       this.consultas = new Array;//variables solamente una ves
       this.listReport = new Array;//variables solamente una ves
       this.listSemantico = new Array;//variables solamente una ves
+      this.listSemanticoMiniSQL = new Array;//variables solamente una ves
       realizar.forEach(element => {
         //realizar la tablas
         if (element instanceof Tabla && this.insertTabla(element)) {
@@ -55,12 +58,11 @@ export class Memoria {
         }
         //Consulta un select *
         if (element instanceof Consulta) {
-
+          this.realizarConsulta(element)
         }
         //Listar los reportes de parsar
         if (element instanceof ErrorParser) {
           this.listReport.push(element);
-
         }
         //Consulta un select *
         if (element instanceof InstruccionIF) {
@@ -82,7 +84,101 @@ export class Memoria {
     }
   }
 
-  insertTabla(element: Tabla): Boolean {
+  private realizarConsulta(element: Consulta): void {
+    if (element.listaColumna instanceof ErrorParser) {
+      this.listReport.push(element.listaColumna);
+    }
+    if (String(element.listaColumna) === "*") {
+      if (element.nombreTabla == undefined) {
+        this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line, element.column, 'undefind', TipoErrorEjecucion.NO_SELECCION_TABLA));
+      } else {
+        const ustarTabla: TablaEjecucion | undefined = this.buscarTablaNombre(String(element.nombreTabla));
+        if (ustarTabla == undefined) {
+          this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line, element.column, 'undefind', TipoErrorEjecucion.NO_HAY_TABLA_CONSULTA));
+        } else {
+          this.aplicarFiltro(ustarTabla, element)
+        }
+      }
+    }
+    else {
+      for (let index = 0; index < element.listaColumna.length; index++) {
+        //const element = array[index];
+
+      }
+    }
+  }
+
+  private aplicarFiltro(ustarTabla: TablaEjecucion, element: Consulta) {
+    console.log(element)
+    if (element.listFiltros == undefined) {
+      this.consultas.push(ustarTabla);
+    } else {
+      if (element.listFiltros.length > 0) {
+        if (element.listFiltros[0].listadoAsignacion == undefined || element.listFiltros[0].listadoAsignacion instanceof ErrorParser) {
+          this.consultas.push(ustarTabla);//SELECT *  FROM person WHERE ;
+        } else {
+          const ustarTablaCopia: TablaEjecucion = ustarTabla;
+          for (let i = 0; i < element.listFiltros.length; i++) {
+            var numeroLimit = 0;
+            const filtro: Filtro = element.listFiltros[i];
+            switch (filtro.tipo) {
+              case TipoFiltro.LIMIT:
+                const nuevoListadoElmento: ElementoTabla[] = [];
+                console.log(filtro.listadoAsignacion)
+                if (filtro.listadoAsignacion instanceof Valor) {
+                  const convertirValor: Valor = filtro.listadoAsignacion as Valor;
+                  numeroLimit = Number(convertirValor.valor);
+                }
+                if (filtro.listadoAsignacion instanceof Opereaciones) {
+                  const convertirValor: Opereaciones = filtro.listadoAsignacion as Opereaciones;
+                  numeroLimit = Number(convertirValor.getValue()?.valor);
+                }
+                for (let j = 0; (j < ustarTablaCopia.listadoElementos.length)
+                  &&
+                  (j < numeroLimit)
+                  ; j++) {
+                  const element: ElementoTabla = ustarTablaCopia.listadoElementos[j];
+                  nuevoListadoElmento.push(element);
+                }
+                ustarTablaCopia.listadoElementos = nuevoListadoElmento;//SELECT * FROM persona LIMIT 10;
+                break;
+              case TipoFiltro.OFFSET:
+                const nuevoListadoElmentoOFFSET: ElementoTabla[] = [];
+                console.log(filtro.listadoAsignacion)
+                if (filtro.listadoAsignacion instanceof Valor) {
+                  const convertirValor: Valor = filtro.listadoAsignacion as Valor;
+                  numeroLimit = Number(convertirValor.valor);
+                }
+                if (filtro.listadoAsignacion instanceof Opereaciones) {
+                  const convertirValor: Opereaciones = filtro.listadoAsignacion as Opereaciones;
+                  numeroLimit = Number(convertirValor.getValue()?.valor);
+                }
+                for (let j = numeroLimit; (j < ustarTablaCopia.listadoElementos.length) && (j > -1); j++) {
+                  const element: ElementoTabla = ustarTablaCopia.listadoElementos[j];
+                  nuevoListadoElmentoOFFSET.push(element);
+                }
+                ustarTablaCopia.listadoElementos = nuevoListadoElmentoOFFSET;//SELECT * FROM persona LIMIT 10;
+                break;
+              case TipoFiltro.WHERE:
+                
+                break;
+              default:
+                break;
+            }
+            if (numeroLimit < 0) {
+              this.listSemanticoMiniSQL.push(new ErrorEjecucion(filtro.line, filtro.column, 'undefind', TipoErrorEjecucion.MENOR_0));
+            }
+          }
+          this.consultas.push(ustarTablaCopia);//despues de utilizar los filtros;
+        }
+      } else {
+        this.consultas.push(ustarTabla);//SELECT *  FROM person ;
+      }
+    }
+  }
+
+
+  private insertTabla(element: Tabla): Boolean {
     if (this.limpiarTabla(element)) {
       if (this.tablas.length > 0) {
         if ((this.tablas.filter(p => p.tablas.name == element.name).length > 0)) {
@@ -98,7 +194,7 @@ export class Memoria {
     return false;
   }
 
-  limpiarTabla(element: Tabla): boolean {
+  private limpiarTabla(element: Tabla): boolean {
     if (element.listadoAtributo instanceof ErrorParser) {
       this.listReport.push(element.listadoAtributo);
       return false;
@@ -106,7 +202,7 @@ export class Memoria {
     return true;
   }
 
-  insertElementoTabla(element: ElementoTabla): Boolean {
+  private insertElementoTabla(element: ElementoTabla): Boolean {
     if (this.tablas.length > 0 && this.limpiarElementoTabla(element)) {
       this.list = this.tablas.filter(//TablaEjecucion memoria
         p1 => p1.tablas.listadoAtributo.filter(//Tabla memoria
@@ -150,7 +246,7 @@ export class Memoria {
     }
   }
 
-  limpiarElementoTabla(element: ElementoTabla): boolean {
+  private limpiarElementoTabla(element: ElementoTabla): boolean {
     if (element.listadoAtributos instanceof ErrorParser) {
       this.listReport.push(element.listadoAtributos);
       return false;
@@ -158,7 +254,7 @@ export class Memoria {
     return true;
   }
 
-  insertarVariable(element: Declaracion) {
+  private insertarVariable(element: Declaracion) {
     const linea = element.line;
     const column = element.column;
     const valorVariable = element.valor;
@@ -178,7 +274,7 @@ export class Memoria {
     }
   }
 
-  limpiarDeclaracion(element: Declaracion): boolean {
+  private limpiarDeclaracion(element: Declaracion): boolean {
     if (element.valor instanceof ErrorParser) {
       this.listReport.push(element.valor);
       return false;
@@ -186,7 +282,7 @@ export class Memoria {
     return true;
   }
 
-  asignacionValoresVariables(element: Set) {
+  private asignacionValoresVariables(element: Set) {
     if (this.listVariables.length > 0 && this.limpiarSet(element)) {
       const itimEle: Set = element;
       this.listVariables.forEach(element_uno => {
@@ -198,7 +294,7 @@ export class Memoria {
     }
   }
 
-  limpiarSet(element: Set): boolean {
+  private limpiarSet(element: Set): boolean {
     if (element.listadoAsignacion instanceof ErrorParser) {
       this.listReport.push(element.listadoAsignacion);
       return false;
@@ -207,7 +303,7 @@ export class Memoria {
   }
 
   //para imprimir en consola la peticion de imprimir
-  imprimir(element: Imprimir) {
+  private imprimir(element: Imprimir) {
     var imprimirTexto: String = ' ';
     if (element.listadoValores instanceof ErrorParser) {
       this.listReport.push(element.listadoValores);
@@ -239,12 +335,23 @@ export class Memoria {
   }
 
   //buscar variable y retornar el valor de la variable de la memoria.
-  buscarValorVariable(buscar: String): String | undefined {
+  private buscarValorVariable(buscar: String): String | undefined {
     var variable: String | undefined;
     const list: Array<Variable> = this.listVariables.filter(p => p.nombre == buscar);
     if (list.length > 0) {
       const usar: String = list[0].getValorString();
       return usar + '';
+    }
+    return undefined;
+  }
+  private buscarTablaNombre(buscar: String): TablaEjecucion | undefined {
+    if (this.tablas.length > 0) {
+      const listTablas: Array<TablaEjecucion> = this.tablas.filter(p => p.tablas.name == buscar);
+      if (listTablas.length > 0) {
+        return listTablas[0]
+      } else {
+        return undefined;
+      }
     }
     return undefined;
   }
