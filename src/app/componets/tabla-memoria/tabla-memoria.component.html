@@ -1,0 +1,13 @@
+<div class="contener-tabla" *ngFor="let user of mostrarTablaView">
+    <div class="titulo"><h1>{{ user.nombre }}</h1></div>
+    <table>
+        <td *ngFor="let atributo of user.columnas">
+            <tr class="etiqueta-columan">{{ atributo }}</tr>
+        </td>
+        <tr class="etiqueta-data" *ngFor="let informacion of user.listadoElementos">
+            <td class="etiqueta-data" *ngFor="let atributo of informacion.listadoDatos">
+                <tr class="etiqueta-data">{{ atributo }}</tr>
+            </td>
+        </tr>
+    </table>
+</div>

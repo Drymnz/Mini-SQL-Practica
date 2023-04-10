@@ -1,0 +1,18 @@
+#b-m {
+    top: 10px;
+}
+#b-r {
+    top: 50px;
+}
+#b-r-s {
+    top: 90px;
+    height: 50px;
+}
+#b-r-sql {
+    top: 150px;
+    height: 50px;
+}
+
+#b-c-db {
+    bottom: 50px;
+}

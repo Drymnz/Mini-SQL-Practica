@@ -25,9 +25,12 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/app/analyzer/analizar.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -87,6 +90,7 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -96,6 +100,6 @@
     }
   },
   "cli": {
-    "analytics": "fbc33faf-71ec-4f8d-a0bc-c40dfa2f56ea"
+    "analytics": "5ef412af-9f84-42eb-963a-2a40525d5424"
   }
 }

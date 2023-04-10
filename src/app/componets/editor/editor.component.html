@@ -1,0 +1,14 @@
+<ngs-code-editor
+  style="height: 100vh;"
+  [theme]="theme"
+  [codeModel]="codeModel"
+  [options]="options"
+  >
+</ngs-code-editor>
+<button class="b-c-v" id="b-c" (click)="vista()">Compilar</button>
+<button class="b-c-v" id="b-r"  (click)="irReportesLS()" *ngIf="mostrarReportesErrorLexicoSintacticos" >Reportes L/S </button>
+<button class="b-c-v" id="b-r-s" (click)="irReportesDB()" *ngIf="mostrarReportesSemanticos" >Reportes Semanticos DB</button>
+<button class="b-c-v" id="b-r-sql" (click)="irReportesMiniSQL()" *ngIf="mostrarReportesSemanticosMiniSQL" >Reportes Semanticos Mini-SQL</button>
+<button class="b-c-v" id="b-m" (click)="irMemoria()" *ngIf="mostrarMemoria" >Memoria</button>
+<button class="b-c-v" id="b-c-db" (click)="irConsulta()" *ngIf="mostrarConsulta" >Consultas</button>
+<ng-template appDinamicoTablaMemoria></ng-template>
