@@ -79,7 +79,7 @@ export class Memoria {
           if (condicionIF === 'true') {
             this.cargar(element.listaAcciones);//segimiento
           } else { //else
-            
+
             if (element.cola instanceof InstruccionELSE) {
               this.cargar(element.cola.listaAcciones);//segimiento
             }
@@ -122,10 +122,13 @@ export class Memoria {
           this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line, element.column, 'undefind', TipoErrorEjecucion.NO_HAY_TABLA_CONSULTA));
         } else {
           // columnas selecionadas
+          const contador = this.listSemanticoMiniSQL.length;
           const listadoReturnar: Atributo[] = this.convertirListadoValorListadoAtributos(element.listaColumna);
           ustarTabla.listadoElementos = this.filtrarElemento(listadoReturnar, ustarTabla.listadoElementos);
-          ustarTabla.tablas.listadoAtributo = listadoReturnar;
+          if (!(contador != this.listSemanticoMiniSQL.length)) {
+            ustarTabla.tablas.listadoAtributo = listadoReturnar;
           this.consultas.push(Object.assign(ustarTabla));
+          }
         }
       }
     }
@@ -133,31 +136,55 @@ export class Memoria {
 
   private filtrarElemento(listado: Atributo[], listadoElementos: ElementoTabla[]): ElementoTabla[] {
     const listadoRetornar: ElementoTabla[] = [];
-    for (let j = 0; j < listadoElementos.length; j++) {
-      const element: ElementoTabla = listadoElementos[j];
-      var nuevoElemento: ElementoTabla = new ElementoTabla(element.line, element.column, []);
-      var insertar: Boolean = true;
-      for (let i = 0; i < listado.length; i++) {
-        const atributo: Atributo = listado[i];
+    var insertar: Boolean = true;
+    for (let j = 0; j < listadoElementos.length; j++) {//Elementos de talbla
+      const element: ElementoTabla = Object.assign(listadoElementos[j]);//elemento a confrontar
+      var nuevoElemento: ElementoTabla = new ElementoTabla(element.line, element.column, []);//returnar
+      const listaVerificacion: Boolean[] = [];
+      for (let i = 0; i < listado.length; i++) {// listado para ver que atributos en la consulta
+        const atributo: Atributo = Object.assign(listado[i]);//revisar
         for (let a = 0; a < element.listadoAtributos.length; a++) {
-          const asingacion: Asignacion = element.listadoAtributos[a];
+          const asingacion: Asignacion = Object.assign(element.listadoAtributos[a]);// ver el listado de atributos de la tabla
           if (atributo.name == asingacion.nombre) {
             nuevoElemento.listadoAtributos.push(asingacion);
+            listaVerificacion.push(true);
           }
         }
+      }
+      if (!(listaVerificacion.length === listado.length)) {
+        this.verCualColumnaNoExiste(listado, element)
+        break;
       }
       listadoRetornar.push(nuevoElemento);
     }
     return listadoRetornar;
   }
 
+  private verCualColumnaNoExiste(listado: Atributo[], element: ElementoTabla) {
+    var revisarListado: String[] = [];
+    const segundoListado: String[] = [];
+    for (let i = 0; i < listado.length; i++) {// listado para ver que atributos en la consulta
+      revisarListado.push(listado[i].name);
+      for (let a = 0; a < element.listadoAtributos.length; a++) {
+        segundoListado.push(element.listadoAtributos[a].nombre)
+        if (listado[i].name == element.listadoAtributos[a].nombre) {
+          revisarListado= revisarListado.filter(p=> !(p== listado[i].name));
+        }
+      }
+    }
+    var resultadoFinal:String = '';
+    revisarListado.forEach(element => {
+      resultadoFinal+= element + ', ';
+    });
+    this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line,element.column,resultadoFinal,TipoErrorEjecucion.COLUMNA_NO_EXISTENTE));
+  }
+
   private convertirListadoValorListadoAtributos(listValor: Valor[]): Atributo[] {
     const listadoReturnar: Atributo[] = [];
     for (let index = 0; index < listValor.length; index++) {
-      const element = listValor[index];
+      const element = Object.assign(listValor[index]);
       listadoReturnar.push(new Atributo(element.line, element.column, element.getValorString(), TipoDato.VARIABLE));
     }
-
     return listadoReturnar;
   }
 
@@ -172,7 +199,7 @@ export class Memoria {
           const ustarTablaCopia = Object.assign(ustarTabla);
           for (let i = 0; i < element.listFiltros.length; i++) {
             var numeroLimit = 0;
-            const filtro: Filtro = element.listFiltros[i];
+            const filtro: Filtro = Object.assign(element.listFiltros[i]);
             switch (filtro.tipo) {
               case TipoFiltro.LIMIT:
                 const nuevoListadoElmento: ElementoTabla[] = [];
@@ -188,7 +215,7 @@ export class Memoria {
                   &&
                   (j < numeroLimit)
                   ; j++) {
-                  const element: ElementoTabla = ustarTablaCopia.listadoElementos[j];
+                  const element: ElementoTabla = Object.assign(ustarTablaCopia.listadoElementos[j]);
                   nuevoListadoElmento.push(element);
                 }
                 ustarTablaCopia.listadoElementos = nuevoListadoElmento;//SELECT * FROM persona LIMIT 10;
@@ -204,7 +231,7 @@ export class Memoria {
                   numeroLimit = Number(convertirValor.getValue()?.valor);
                 }
                 for (let j = numeroLimit; (j < ustarTablaCopia.listadoElementos.length) && (j > -1); j++) {
-                  const element: ElementoTabla = ustarTablaCopia.listadoElementos[j];
+                  const element: ElementoTabla = Object.assign(ustarTablaCopia.listadoElementos[j]);
                   nuevoListadoElmentoOFFSET.push(Object.assign(element));
                 }
                 ustarTablaCopia.listadoElementos = Object.assign(ustarTablaCopia.listadoElementos)
@@ -406,6 +433,7 @@ export class Memoria {
       const usar: String = list[0].getValorString();
       return usar + '';
     }
+    this.listSemanticoMiniSQL.push(new ErrorEjecucion(0, 0, buscar, TipoErrorEjecucion.VARIABLE_NO_EXISTE));
     return undefined;
   }
   private buscarTablaNombre(buscar: String): TablaEjecucion | undefined {
