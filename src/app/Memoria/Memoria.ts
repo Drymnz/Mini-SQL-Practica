@@ -66,19 +66,32 @@ export class Memoria {
         }
         //Consulta un select *
         if (element instanceof InstruccionIF) {
-          //if
+          const aguardarListado: Array<Variable> = Object.assign({}, this.listVariables);//if
+          var condicionIF;
+          if (element.condicion instanceof Valor) {
+            condicionIF = element.condicion.valor;
+          }
+          if (element.condicion instanceof Opereaciones) {
+            condicionIF = element.condicion.getValue()?.valor;
+          }
           //verifica si entro al if
-          //const irThen = 
-          //this.cargar(element.listaAcciones);
-          //else
-          if (element.cola instanceof InstruccionELSE) {
-            //this.cargar(element.cola.listaAcciones);
+          console.log(condicionIF === 'true')
+          if (condicionIF === 'true') {
+            this.cargar(element.listaAcciones);//segimiento
+          } else { //else
+            
+            if (element.cola instanceof InstruccionELSE) {
+              this.cargar(element.cola.listaAcciones);//segimiento
+            }
+            if (element.cola instanceof InstruccionELSEIF) {
+              console.log(element.cola)
+              const enviar = element.cola as InstruccionIF;
+              const seguimient: Token[] = [];
+              seguimient.push(enviar)
+              this.cargar(seguimient);//segimiento
+            }
           }
-          if (element.cola instanceof InstruccionELSEIF) {
-            //const irThen = 
-            //const enviar = element.cola as InstruccionIF;
-            //this.cargar(enviar);
-          }
+          this.listVariables = aguardarListado;
         }
       });
     }
@@ -109,8 +122,8 @@ export class Memoria {
           this.listSemanticoMiniSQL.push(new ErrorEjecucion(element.line, element.column, 'undefind', TipoErrorEjecucion.NO_HAY_TABLA_CONSULTA));
         } else {
           // columnas selecionadas
-          const  listadoReturnar:Atributo[] = this.convertirListadoValorListadoAtributos(element.listaColumna);
-          ustarTabla.listadoElementos = this.filtrarElemento(listadoReturnar,ustarTabla.listadoElementos);
+          const listadoReturnar: Atributo[] = this.convertirListadoValorListadoAtributos(element.listaColumna);
+          ustarTabla.listadoElementos = this.filtrarElemento(listadoReturnar, ustarTabla.listadoElementos);
           ustarTabla.tablas.listadoAtributo = listadoReturnar;
           this.consultas.push(Object.assign(ustarTabla));
         }
@@ -118,16 +131,16 @@ export class Memoria {
     }
   }
 
-  private filtrarElemento(listado:Atributo[],listadoElementos:ElementoTabla[]):ElementoTabla[]{
-    const listadoRetornar:ElementoTabla[] = [];
+  private filtrarElemento(listado: Atributo[], listadoElementos: ElementoTabla[]): ElementoTabla[] {
+    const listadoRetornar: ElementoTabla[] = [];
     for (let j = 0; j < listadoElementos.length; j++) {
-      const element:ElementoTabla = listadoElementos[j];
-      var nuevoElemento:ElementoTabla = new ElementoTabla(element.line,element.column,[]);
-      var insertar:Boolean = true;
+      const element: ElementoTabla = listadoElementos[j];
+      var nuevoElemento: ElementoTabla = new ElementoTabla(element.line, element.column, []);
+      var insertar: Boolean = true;
       for (let i = 0; i < listado.length; i++) {
-        const atributo:Atributo = listado[i];
+        const atributo: Atributo = listado[i];
         for (let a = 0; a < element.listadoAtributos.length; a++) {
-          const asingacion:Asignacion = element.listadoAtributos[a];
+          const asingacion: Asignacion = element.listadoAtributos[a];
           if (atributo.name == asingacion.nombre) {
             nuevoElemento.listadoAtributos.push(asingacion);
           }
@@ -138,11 +151,11 @@ export class Memoria {
     return listadoRetornar;
   }
 
-  private convertirListadoValorListadoAtributos(listValor:Valor[]):Atributo[]{
-    const  listadoReturnar:Atributo[] = [];
+  private convertirListadoValorListadoAtributos(listValor: Valor[]): Atributo[] {
+    const listadoReturnar: Atributo[] = [];
     for (let index = 0; index < listValor.length; index++) {
       const element = listValor[index];
-      listadoReturnar.push(new Atributo(element.line,element.column,element.getValorString(),TipoDato.VARIABLE));
+      listadoReturnar.push(new Atributo(element.line, element.column, element.getValorString(), TipoDato.VARIABLE));
     }
 
     return listadoReturnar;
@@ -192,7 +205,7 @@ export class Memoria {
                 }
                 for (let j = numeroLimit; (j < ustarTablaCopia.listadoElementos.length) && (j > -1); j++) {
                   const element: ElementoTabla = ustarTablaCopia.listadoElementos[j];
-                  nuevoListadoElmentoOFFSET.push( Object.assign(element));
+                  nuevoListadoElmentoOFFSET.push(Object.assign(element));
                 }
                 ustarTablaCopia.listadoElementos = Object.assign(ustarTablaCopia.listadoElementos)
                 ustarTablaCopia.listadoElementos = nuevoListadoElmentoOFFSET;//SELECT * FROM persona LIMIT 10;
@@ -224,8 +237,8 @@ export class Memoria {
     }
   }
 
-  private filtarWHERE(ustarTabla: TablaEjecucion){
-    
+  private filtarWHERE(ustarTabla: TablaEjecucion) {
+
   }
 
 
